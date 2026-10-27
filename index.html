@@ -94,10 +94,10 @@ h1,h2,h3,p{margin:0}
 .marquee__star{font-size:clamp(14px,1.6vw,26px);opacity:.7}
 @keyframes marq{to{transform:translateX(-50%)}}
 
-/* BUILD SECTION (Canvas Sequence) */
-.build{position:relative;height:400vh;background:var(--ink);}
+/* BUILD SECTION */
+.build{position:relative;height:500vh;background:var(--ink);} /* Increased height slightly */
 .build__sticky{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--ink);}
-.build__canvas{width:100%;height:100%;display:block;object-fit:cover;}
+.build__canvas{width:100%;height:100%;display:block;object-fit:cover;will-change:transform;}
 .build__veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 26%,rgba(0,0,0,0) 52%,rgba(0,0,0,.78) 100%);}
 .build__ui{position:absolute;inset:0;pointer-events:none;color:var(--cream)}
 
@@ -419,6 +419,7 @@ let loaderClosed = false;
 
 const msgs = ['Heating the grill...', 'Slicing the bun...', 'Cheddar is melting...', 'Almost ready. Let\'s go.'];
 
+// Fake progress bar animation
 gsap.to(pct, {
   v: 92, duration: 1.5, ease: 'power1.out',
   onUpdate() {
@@ -461,15 +462,30 @@ function closeLoader() {
 const canvas = document.getElementById('build-canvas');
 const ctx = canvas.getContext('2d');
 const COUNT = 180;
-const BASE_PATH = "https://cdn.jsdelivr.net/gh/miteshkareja/fastfood_theme@main/frame/";
-const frames = new Array(COUNT);
 
-// Preload images from jsDelivr
+// Changed path to relative because you are hosting on GitHub Pages
+const BASE_PATH = "frame/"; 
+
+const frames = new Array(COUNT);
+let imagesLoaded = 0;
+let sequenceStarted = false;
+
+// Preload images
 for (let i = 0; i < COUNT; i++) {
   const img = new Image();
   img.decoding = "async";
-  // Format: frame-001.webp
   img.src = BASE_PATH + "frame-" + String(i + 1).padStart(3, '0') + ".webp";
+  
+  img.onload = () => {
+    imagesLoaded++;
+    // Start the sequence and hide loader once the first 15 frames are ready
+    if (imagesLoaded >= 15 && !sequenceStarted) {
+      sequenceStarted = true;
+      drawFrame(0);
+      closeLoader();
+      requestAnimationFrame(renderLoop);
+    }
+  };
   frames[i] = img;
 }
 
@@ -531,7 +547,7 @@ ScrollTrigger.create({
 // Render Loop (Lerp for smoothness)
 function renderLoop() {
   if (isBuildActive) {
-    // 0.28 creates that smooth momentum effect
+    // 0.28 creates the momentum/smooth easing effect
     currentFrame += (targetFrame - currentFrame) * 0.28;
     if (Math.abs(targetFrame - currentFrame) < 0.01) currentFrame = targetFrame;
     drawFrame(Math.round(currentFrame));
@@ -539,14 +555,8 @@ function renderLoop() {
   requestAnimationFrame(renderLoop);
 }
 
-// Start sequence when first image loads
-frames[0].onload = () => {
-  drawFrame(0);
-  closeLoader();
-  requestAnimationFrame(renderLoop);
-};
 // Fallback if load takes too long
-setTimeout(closeLoader, 5000);
+setTimeout(closeLoader, 8000);
 
 // 5. UI TEXT UPDATES
 const steps = qa('[data-step]');
