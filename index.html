@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="fr" class="no-js">
+<html lang="en" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>BURGUR — Le montage au scroll</title>
-<meta name="description" content="BURGUR — le burger qui se monte au scroll. Pain, sauce, salade, steak, cheddar. Fait main.">
+<title>BURGUR — The Scroll Build</title>
+<meta name="description" content="BURGUR — the burger that builds itself as you scroll. Bun, sauce, lettuce, smashed patty, cheddar. Handmade.">
 <script>document.documentElement.classList.replace('no-js','js');</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -153,11 +153,11 @@ h1,h2,h3,p{margin:0}
 @keyframes marq{to{transform:translateX(-50%)}}
 
 /* ============================================================
-   6. BUILD  (la section vidéo scrubbée)
+   6. BUILD (Scroll Video)
    ============================================================ */
 .build{
   position:relative;
-  height:600vh;               /* 6 ingrédients × 100vh */
+  height:600vh;               /* 6 ingredients × 100vh */
   background:var(--ink);
 }
 .build__sticky{
@@ -177,7 +177,7 @@ h1,h2,h3,p{margin:0}
 }
 .build__ui{position:absolute;inset:0;pointer-events:none;color:var(--cream)}
 
-/* --- en-tête --- */
+/* --- Header --- */
 .build__head{
   position:absolute;top:calc(var(--pad) + 44px);left:var(--pad);right:var(--pad);
   display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;
@@ -186,7 +186,7 @@ h1,h2,h3,p{margin:0}
 .build__title{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.6rem,3.2vw,3rem);text-transform:uppercase;line-height:.92;margin-top:8px}
 .build__title em{font-style:normal;color:var(--yellow)}
 
-/* --- étapes (grand texte) --- */
+/* --- Steps (Large Text) --- */
 .build__steps{position:absolute;inset:0}
 .bstep{
   position:absolute;left:var(--pad);bottom:clamp(96px,15vh,180px);
@@ -208,7 +208,7 @@ h1,h2,h3,p{margin:0}
 }
 .bstep__desc{margin-top:14px;font-size:clamp(13px,1.4vw,17px);color:rgba(243,237,226,.68);max-width:34ch}
 
-/* --- rail de droite --- */
+/* --- Right Rail --- */
 .build__rail{
   position:absolute;right:var(--pad);top:50%;transform:translateY(-50%);
   display:none;flex-direction:column;gap:14px;align-items:flex-end;
@@ -223,7 +223,7 @@ h1,h2,h3,p{margin:0}
 .build__rail li.is-active{color:var(--cream)}
 .build__rail li.is-active span{width:44px;background:var(--yellow)}
 
-/* --- compteur + barre --- */
+/* --- Counter & Progress --- */
 .build__count{
   position:absolute;right:var(--pad);bottom:clamp(96px,15vh,180px);
   font-family:'Anton',Impact,sans-serif;font-size:clamp(2rem,4.5vw,4rem);line-height:1;
@@ -242,7 +242,7 @@ h1,h2,h3,p{margin:0}
 }
 
 /* ============================================================
-   7. MENU (scroll horizontal)
+   7. MENU (Horizontal Scroll)
    ============================================================ */
 .menu{
   height:100svh;background:var(--cream);overflow:hidden;
@@ -282,7 +282,7 @@ h1,h2,h3,p{margin:0}
 .card--end span{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.5;margin-top:10px;display:block}
 
 /* ============================================================
-   8. INFOS / VISITE
+   8. VISIT
    ============================================================ */
 .visit{background:var(--ink);color:var(--cream);padding:clamp(70px,12vh,140px) var(--pad)}
 .visit__grid{display:grid;grid-template-columns:1fr;gap:clamp(36px,6vw,80px)}
@@ -379,85 +379,79 @@ h1,h2,h3,p{margin:0}
 
 <div class="grain" aria-hidden="true"></div>
 
-<!-- curseur custom -->
 <div class="cursor" data-cursor aria-hidden="true">
   <span class="cursor__dot"></span>
   <span class="cursor__label"></span>
 </div>
 
-<!-- loader -->
 <div class="loader" data-loader>
   <div class="loader__inner">
-    <p class="loader__k kicker">BURGUR · atelier de montage</p>
+    <p class="loader__k kicker">BURGUR · Build Process</p>
     <p class="loader__pct" data-loader-pct>0%</p>
     <div class="loader__bar"><i data-loader-bar></i></div>
-    <p class="loader__msg" data-loader-msg>On chauffe la plancha…</p>
+    <p class="loader__msg" data-loader-msg>Heating the grill...</p>
   </div>
 </div>
 
-<!-- topbar -->
 <header class="topbar">
   <a class="topbar__logo" href="#top" data-magnetic>BURGUR<span>®</span></a>
   <p class="topbar__status">
     <span class="topbar__dot" aria-hidden="true"></span>
-    <span>Ouvert 7/7 · 11H30 → 22H30</span>
+    <span>Open 7/7 · 11:30 AM → 10:30 PM</span>
   </p>
-  <a class="topbar__link" href="#menu" data-magnetic data-cursor-text="Goûte">
-    <span>La carte</span>
+  <a class="topbar__link" href="#menu" data-magnetic data-cursor-text="Taste">
+    <span>Menu</span>
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </a>
 </header>
 
 <main id="top">
 
-  <!-- ================= HERO ================= -->
   <section class="hero">
     <div class="hero__top">
-      <p class="kicker hero__kicker">Pain brioché · bœuf smashé<br>cheddar fondu · sauce maison</p>
-      <span class="hero__badge" data-reveal>Fait main · 100 % bœuf</span>
+      <p class="kicker hero__kicker">Brioche Bun · Smashed Beef<br>Melted Cheddar · House Sauce</p>
+      <span class="hero__badge" data-reveal>Handmade · 100% Beef</span>
     </div>
 
     <h1 class="hero__title display" data-hero-title>BURGUR</h1>
 
     <div class="hero__foot">
-      <p class="hero__tag" data-reveal>Un burger, ça ne se raconte pas. Ça se monte — ingrédient par ingrédient, au fil du scroll.</p>
-      <a class="hero__scroll" href="#build">Scroll pour empiler <i aria-hidden="true"></i></a>
+      <p class="hero__tag" data-reveal>A burger isn't told. It's built—ingredient by ingredient, right before your eyes.</p>
+      <a class="hero__scroll" href="#build">Scroll to build <i aria-hidden="true"></i></a>
     </div>
   </section>
 
-  <!-- ================= MARQUEE ================= -->
-  <section class="marquee" aria-label="Smash, cheddar, sauce, brioché">
+  <section class="marquee" aria-label="Smash, Cheddar, Sauce, Brioche">
     <div class="marquee__track">
       <div class="marquee__group">
         <span class="marquee__word">Smash</span><span class="marquee__star">✱</span>
         <span class="marquee__word">Cheddar</span><span class="marquee__star">✱</span>
         <span class="marquee__word">Sauce</span><span class="marquee__star">✱</span>
         <span class="marquee__word marquee__word--alt">¡Burgur!</span><span class="marquee__star">✱</span>
-        <span class="marquee__word">Brioché</span><span class="marquee__star">✱</span>
-        <span class="marquee__word">Frites</span><span class="marquee__star">✱</span>
-        <span class="marquee__word marquee__word--alt">Una más</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Brioche</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Fries</span><span class="marquee__star">✱</span>
+        <span class="marquee__word marquee__word--alt">One More</span><span class="marquee__star">✱</span>
       </div>
       <div class="marquee__group" aria-hidden="true">
         <span class="marquee__word">Smash</span><span class="marquee__star">✱</span>
         <span class="marquee__word">Cheddar</span><span class="marquee__star">✱</span>
         <span class="marquee__word">Sauce</span><span class="marquee__star">✱</span>
         <span class="marquee__word marquee__word--alt">¡Burgur!</span><span class="marquee__star">✱</span>
-        <span class="marquee__word">Brioché</span><span class="marquee__star">✱</span>
-        <span class="marquee__word">Frites</span><span class="marquee__star">✱</span>
-        <span class="marquee__word marquee__word--alt">Una más</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Brioche</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Fries</span><span class="marquee__star">✱</span>
+        <span class="marquee__word marquee__word--alt">One More</span><span class="marquee__star">✱</span>
       </div>
     </div>
   </section>
 
-  <!-- ================= BUILD (vidéo scrubbée) ================= -->
   <section class="build" id="build">
     <div class="build__sticky">
-
-      <!-- ⬇︎⬇︎⬇︎  REMPLACE L'URL PAR LA TIENNE  ⬇︎⬇︎⬇︎ -->
+      
+      <!-- ⬇️ YOUR GITHUB VIDEO URL IS ADDED HERE ⬇️ -->
       <video
         id="build-video"
         class="build__video"
-        src="https://cdn.jsdelivr.net/gh/USERNAME/REPO@main/burgur.mp4"
+        src="https://cdn.jsdelivr.net/gh/miteshkareja/fastfood_theme@main/burgur.mp4"
         muted
         playsinline
         preload="auto"
@@ -465,185 +459,178 @@ h1,h2,h3,p{margin:0}
         disableremoteplayback
         aria-hidden="true"
         tabindex="-1"></video>
-      <!-- ⬆︎⬆︎⬆︎  REMPLACE L'URL PAR LA TIENNE  ⬆︎⬆︎⬆︎ -->
 
       <div class="build__veil" aria-hidden="true"></div>
 
       <div class="build__ui">
         <div class="build__head">
           <div>
-            <p class="kicker">Le montage · 06 étapes</p>
-            <h2 class="build__title">Ça se construit<br>tout seul. <em>Presque.</em></h2>
+            <p class="kicker">The Build · 06 Steps</p>
+            <h2 class="build__title">It builds itself.<br><em>Almost.</em></h2>
           </div>
         </div>
 
-        <!-- grand texte par étape -->
         <ol class="build__steps">
           <li class="bstep" data-step>
             <span class="bstep__num">01 / 06</span>
-            <h3 class="bstep__name">Le pain</h3>
-            <p class="bstep__desc">Brioché, toasté au beurre. La base de tout.</p>
+            <h3 class="bstep__name">The Bun</h3>
+            <p class="bstep__desc">Toasted brioche. The foundation of everything.</p>
           </li>
           <li class="bstep" data-step>
             <span class="bstep__num">02 / 06</span>
-            <h3 class="bstep__name">La sauce</h3>
-            <p class="bstep__desc">Recette secrète. Un peu fumée, un peu piquante.</p>
+            <h3 class="bstep__name">The Sauce</h3>
+            <p class="bstep__desc">Secret recipe. A little smoky, a little spicy.</p>
           </li>
           <li class="bstep" data-step>
             <span class="bstep__num">03 / 06</span>
-            <h3 class="bstep__name">La salade</h3>
-            <p class="bstep__desc">Croquante, bien froide. Elle tient le mur.</p>
+            <h3 class="bstep__name">The Lettuce</h3>
+            <p class="bstep__desc">Crisp and cold. It holds the wall.</p>
           </li>
           <li class="bstep" data-step>
             <span class="bstep__num">04 / 06</span>
-            <h3 class="bstep__name">Le steak</h3>
-            <p class="bstep__desc">Smashé sur la plancha. Deux minutes par face.</p>
+            <h3 class="bstep__name">The Patty</h3>
+            <p class="bstep__desc">Smashed on the griddle. Two minutes per side.</p>
           </li>
           <li class="bstep" data-step>
             <span class="bstep__num">05 / 06</span>
-            <h3 class="bstep__name">Le cheddar</h3>
-            <p class="bstep__desc">Fondu. Coulant. Il doit déborder. Toujours.</p>
+            <h3 class="bstep__name">The Cheese</h3>
+            <p class="bstep__desc">Melted. Oozing. It has to overflow. Always.</p>
           </li>
           <li class="bstep" data-step>
             <span class="bstep__num">06 / 06</span>
-            <h3 class="bstep__name">Le chapeau</h3>
-            <p class="bstep__desc">On referme. C'est prêt. ¡A comer!</p>
+            <h3 class="bstep__name">The Top Bun</h3>
+            <p class="bstep__desc">Close it up. It's ready. Let's eat!</p>
           </li>
         </ol>
 
-        <!-- rail de droite -->
         <ul class="build__rail" aria-hidden="true">
-          <li data-dot><span></span>Pain</li>
+          <li data-dot><span></span>Bun</li>
           <li data-dot><span></span>Sauce</li>
-          <li data-dot><span></span>Salade</li>
-          <li data-dot><span></span>Steak</li>
-          <li data-dot><span></span>Cheddar</li>
-          <li data-dot><span></span>Chapeau</li>
+          <li data-dot><span></span>Lettuce</li>
+          <li data-dot><span></span>Patty</li>
+          <li data-dot><span></span>Cheese</li>
+          <li data-dot><span></span>Top</li>
         </ul>
 
-        <!-- compteur -->
         <div class="build__count" aria-hidden="true">
           <b data-build-num>01</b><small>/ 06</small>
         </div>
 
-        <!-- barre de progression -->
         <div class="build__progress" aria-hidden="true"><i data-build-bar></i></div>
-        <p class="build__hint" data-build-hint>Scrolle pour empiler</p>
+        <p class="build__hint" data-build-hint>Scroll to build</p>
       </div>
 
     </div>
   </section>
 
-  <!-- ================= MENU HORIZONTAL ================= -->
   <section class="menu" id="menu">
     <div class="menu__head">
       <div>
-        <p class="kicker">La carte · six façons</p>
-        <h2 class="menu__title display">Prends-en <em>une</em>.</h2>
+        <p class="kicker">The Menu · Six Ways</p>
+        <h2 class="menu__title display">Pick <em>one</em>.</h2>
       </div>
-      <p class="kicker" style="opacity:.5">Défile horizontalement →</p>
+      <p class="kicker" style="opacity:.5">Scroll horizontally →</p>
     </div>
 
     <div class="menu__track" data-menu-track>
       <article class="card">
-        <div class="card__top"><span class="card__num">01</span><span class="card__price">CHF 16.–</span></div>
+        <div class="card__top"><span class="card__num">01</span><span class="card__price">$12.00</span></div>
         <div class="card__disc" style="--c:#D22630" aria-hidden="true"></div>
         <div>
-          <h3 class="card__name">Le Classique</h3>
-          <p class="card__desc">Bœuf smashé, cheddar, salade, tomate, sauce maison.</p>
+          <h3 class="card__name">The Classic</h3>
+          <p class="card__desc">Smashed beef, cheddar, lettuce, tomato, house sauce.</p>
         </div>
       </article>
 
       <article class="card">
-        <div class="card__top"><span class="card__num">02</span><span class="card__price">CHF 22.–</span></div>
+        <div class="card__top"><span class="card__num">02</span><span class="card__price">$15.00</span></div>
         <div class="card__disc" style="--c:#F4B720" aria-hidden="true"></div>
         <div>
-          <h3 class="card__name">Le Double</h3>
-          <p class="card__desc">Deux steaks, double cheddar, oignons confits.</p>
+          <h3 class="card__name">The Double</h3>
+          <p class="card__desc">Two patties, double cheddar, caramelized onions.</p>
         </div>
       </article>
 
       <article class="card">
-        <div class="card__top"><span class="card__num">03</span><span class="card__price">CHF 19.–</span></div>
+        <div class="card__top"><span class="card__num">03</span><span class="card__price">$14.00</span></div>
         <div class="card__disc" style="--c:#3F6B45" aria-hidden="true"></div>
         <div>
-          <h3 class="card__name">Le Veggie</h3>
-          <p class="card__desc">Galette de pois chiches, avocat, pickles, yaourt citronné.</p>
+          <h3 class="card__name">The Veggie</h3>
+          <p class="card__desc">Chickpea patty, avocado, pickles, lemon yogurt.</p>
         </div>
       </article>
 
       <article class="card">
-        <div class="card__top"><span class="card__num">04</span><span class="card__price">CHF 18.–</span></div>
+        <div class="card__top"><span class="card__num">04</span><span class="card__price">$13.00</span></div>
         <div class="card__disc" style="--c:#E07A3F" aria-hidden="true"></div>
         <div>
-          <h3 class="card__name">Le Chicken</h3>
-          <p class="card__desc">Poulet croustillant, chou blanc, sauce miel-moutarde.</p>
+          <h3 class="card__name">The Chicken</h3>
+          <p class="card__desc">Crispy chicken, white cabbage, honey-mustard sauce.</p>
         </div>
       </article>
 
       <article class="card">
-        <div class="card__top"><span class="card__num">05</span><span class="card__price">CHF 21.–</span></div>
+        <div class="card__top"><span class="card__num">05</span><span class="card__price">$15.00</span></div>
         <div class="card__disc" style="--c:#8E4B2E" aria-hidden="true"></div>
         <div>
-          <h3 class="card__name">Le Bacon</h3>
-          <p class="card__desc">Bacon fumé, cheddar, oignons crispy, BBQ.</p>
+          <h3 class="card__name">The Bacon</h3>
+          <p class="card__desc">Smoked bacon, cheddar, crispy onions, BBQ sauce.</p>
         </div>
       </article>
 
       <article class="card">
-        <div class="card__top"><span class="card__num">06</span><span class="card__price">CHF 24.–</span></div>
+        <div class="card__top"><span class="card__num">06</span><span class="card__price">$18.00</span></div>
         <div class="card__disc" style="--c:#B21236" aria-hidden="true"></div>
         <div>
-          <h3 class="card__name">Le Chef</h3>
-          <p class="card__desc">Ce que le chef a trouvé ce matin. Fais-nous confiance.</p>
+          <h3 class="card__name">The Chef</h3>
+          <p class="card__desc">Whatever the chef found this morning. Trust us.</p>
         </div>
       </article>
 
       <div class="card card--end">
         <div>
-          <p>¡Ven a probar!</p>
-          <span>Viens goûter.</span>
+          <p>Come taste!</p>
+          <span>We are waiting.</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ================= VISITE ================= -->
   <section class="visit" id="acces">
     <div class="visit__grid">
       <div>
-        <p class="kicker" style="color:rgba(243,237,226,.55)">On t'attend ici</p>
-        <h2 class="visit__title display">Rue du<br>Grill <em>12</em></h2>
+        <p class="kicker" style="color:rgba(243,237,226,.55)">Find us here</p>
+        <h2 class="visit__title display">12 Grill<br><em>Street</em></h2>
 
         <address class="visit__addr">
           <strong>BURGUR</strong><br>
-          Rue du Grill 12<br>
+          12 Grill Street<br>
           2824 Vicques · Jura
         </address>
 
         <dl class="hours">
           <div class="hours__row">
-            <dt>Lun → Jeu</dt>
-            <dd><span>11H30</span><i>→</i><span>22H00</span></dd>
+            <dt>Mon → Thu</dt>
+            <dd><span>11:30 AM</span><i>→</i><span>10:00 PM</span></dd>
           </div>
           <div class="hours__row">
-            <dt>Ven → Sam</dt>
-            <dd><span>11H30</span><i>→</i><span>23H30</span></dd>
+            <dt>Fri → Sat</dt>
+            <dd><span>11:30 AM</span><i>→</i><span>11:30 PM</span></dd>
           </div>
           <div class="hours__row">
-            <dt>Dimanche</dt>
-            <dd><span>12H00</span><i>→</i><span>21H00</span></dd>
+            <dt>Sunday</dt>
+            <dd><span>12:00 PM</span><i>→</i><span>09:00 PM</span></dd>
           </div>
         </dl>
 
         <div class="visit__actions">
-          <a class="btn btn--solid" href="https://maps.google.com" target="_blank" rel="noopener" data-magnetic data-cursor-text="Itinéraire">Itinéraire</a>
-          <a class="btn btn--line" href="tel:+41324356415" data-magnetic data-cursor-text="¿Hola?">032 435 64 15</a>
-          <a class="btn btn--line" href="#menu" data-magnetic data-cursor-text="Miam">Commander</a>
+          <a class="btn btn--solid" href="https://maps.google.com" target="_blank" rel="noopener" data-magnetic data-cursor-text="Directions">Directions</a>
+          <a class="btn btn--line" href="tel:+41324356415" data-magnetic data-cursor-text="Call">+41 32 435 64 15</a>
+          <a class="btn btn--line" href="#menu" data-magnetic data-cursor-text="Yum">Order</a>
         </div>
       </div>
 
-      <div class="visit__map" role="img" aria-label="Plan d'accès au restaurant BURGUR, Rue du Grill 12, Vicques">
+      <div class="visit__map" role="img" aria-label="Map to BURGUR restaurant">
         <div class="visit__pin" aria-hidden="true">B</div>
       </div>
     </div>
@@ -651,48 +638,37 @@ h1,h2,h3,p{margin:0}
 
 </main>
 
-<!-- ================= FOOTER ================= -->
 <footer class="end">
-  <a class="end__bar" href="#top" data-magnetic data-cursor-text="¡Vamos!">
-    <span class="end__bar-k">BURGUR, c'est aussi les frites maison, la terrasse et les sauces qui piquent.</span>
-    <span class="end__bar-url">Remonter <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <a class="end__bar" href="#top" data-magnetic data-cursor-text="Let's go!">
+    <span class="end__bar-k">BURGUR is also about house fries, the terrace, and sauces with a kick.</span>
+    <span class="end__bar-url">Back to top <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   </a>
 
   <p class="end__big display" aria-label="¡Burgur!"><span aria-hidden="true">¡BURGUR!</span></p>
 
   <div class="end__meta">
     <p class="end__links">
-      <a href="#menu">La carte</a>
-      <a href="#acces">Nous trouver</a>
-      <a href="#">Mentions légales</a>
+      <a href="#menu">Menu</a>
+      <a href="#acces">Find Us</a>
+      <a href="#">Legal</a>
       <span style="opacity:.45">© 2026 BURGUR</span>
     </p>
-    <p class="end__credit">Fait avec du pain et du scroll</p>
+    <p class="end__credit">Made with buns and scroll</p>
   </div>
 </footer>
 
-<!-- ============================================================
-     LIBS
-     ============================================================ -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
 
 <script>
-/* ============================================================
-   HELPERS
-   ============================================================ */
 const q  = (s, c = document) => c.querySelector(s);
 const qa = (s, c = document) => Array.from(c.querySelectorAll(s));
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ============================================================
-   1. SMOOTH SCROLL (Lenis) + ScrollTrigger
-   ============================================================ */
 let lenis = null;
-
 if (window.Lenis) {
   lenis = new Lenis({
     duration: 1.15,
@@ -701,14 +677,12 @@ if (window.Lenis) {
     touchMultiplier: 1.6,
     lerp: 0.09
   });
-
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
-  lenis.stop(); // bloqué pendant le loader
+  lenis.stop(); 
 }
 
-// ancres
 qa('a[href^="#"]').forEach((a) => {
   a.addEventListener('click', (e) => {
     const id = a.getAttribute('href');
@@ -721,9 +695,6 @@ qa('a[href^="#"]').forEach((a) => {
   });
 });
 
-/* ============================================================
-   2. SPLIT TEXTE (chars)
-   ============================================================ */
 function splitChars(el) {
   const text = el.textContent.trim();
   el.textContent = '';
@@ -740,12 +711,8 @@ function splitChars(el) {
   });
   return out;
 }
-
 const heroChars = splitChars(q('[data-hero-title]'));
 
-/* ============================================================
-   3. LOADER
-   ============================================================ */
 const loader    = q('[data-loader]');
 const pctEl     = q('[data-loader-pct]');
 const barEl     = q('[data-loader-bar]');
@@ -755,10 +722,10 @@ const pct = { v: 0 };
 let loaderClosed = false;
 
 const msgs = [
-  'On chauffe la plancha…',
-  'On tranche le pain…',
-  'Le cheddar arrive…',
-  'Presque prêt. Tranquilo.'
+  'Heating the grill...',
+  'Slicing the bun...',
+  'Cheddar is melting...',
+  'Almost ready. Let\'s go.'
 ];
 
 gsap.to(pct, {
@@ -806,15 +773,10 @@ function closeLoader() {
   });
 }
 
-/* ============================================================
-   4. VIDEO SCRUBBING
-   ============================================================ */
 const video = q('#build-video');
-
 let videoReady = false;
 let videoDuration = 0;
 let buildActive = false;
-
 const scrub = { t: 0, target: 0 };
 
 function onDuration() {
@@ -832,10 +794,8 @@ video.addEventListener('durationchange', onDuration);
 video.addEventListener('canplay', onDuration);
 if (video.readyState >= 1) onDuration();
 
-// filet de sécurité : on ne bloque pas l'utilisateur
 setTimeout(closeLoader, 7000);
 
-// iOS / Safari : il faut "amorcer" la lecture une fois
 let primed = false;
 function primeVideo() {
   if (primed || videoReady === false) return;
@@ -851,7 +811,6 @@ function primeVideo() {
   window.addEventListener(ev, primeVideo, { once: true, passive: true });
 });
 
-/* --- éléments d'UI de la section --- */
 const barEl2  = q('[data-build-bar]');
 const numEl   = q('[data-build-num]');
 const hintEl  = q('[data-build-hint]');
@@ -869,7 +828,6 @@ function setStep(i) {
   if (numEl) numEl.textContent = String(i + 1).padStart(2, '0');
 }
 
-/* --- progression du scroll dans la section --- */
 ScrollTrigger.create({
   trigger: '.build',
   start: 'top top',
@@ -882,15 +840,12 @@ ScrollTrigger.create({
   }
 });
 
-/* --- boucle de rendu : lerp + seek vidéo + UI --- */
 gsap.ticker.add(() => {
-  // interpolation douce
   scrub.t += (scrub.target - scrub.t) * 0.14;
   if (Math.abs(scrub.target - scrub.t) < 0.0004) scrub.t = scrub.target;
 
   const p = scrub.t;
 
-  // seek vidéo
   if (videoReady && buildActive) {
     const t = clamp(p * videoDuration, 0, videoDuration - 0.05);
     if (Math.abs(video.currentTime - t) > 0.008) {
@@ -898,7 +853,6 @@ gsap.ticker.add(() => {
     }
   }
 
-  // UI
   if (barEl2) barEl2.style.transform = 'scaleX(' + p + ')';
 
   const idx = clamp(Math.floor(p * STEP_COUNT + 0.0001), 0, STEP_COUNT - 1);
@@ -907,12 +861,8 @@ gsap.ticker.add(() => {
   if (hintEl) hintEl.style.opacity = p > 0.03 ? 0 : 1;
 });
 
-/* état initial */
 setStep(0);
 
-/* ============================================================
-   5. MENU HORIZONTAL
-   ============================================================ */
 const menuTrack = q('[data-menu-track]');
 
 if (menuTrack) {
@@ -933,9 +883,6 @@ if (menuTrack) {
   });
 }
 
-/* ============================================================
-   6. REVEALS
-   ============================================================ */
 qa('[data-reveal]').forEach((el) => {
   gsap.from(el, {
     y: 26,
@@ -957,9 +904,6 @@ gsap.utils.toArray('.visit__addr, .hours, .visit__actions, .visit__map').forEach
   });
 });
 
-/* ============================================================
-   7. CURSOR + MAGNETIC
-   ============================================================ */
 const cursorEl = q('[data-cursor]');
 
 if (cursorEl && window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
@@ -998,16 +942,11 @@ qa('[data-magnetic]').forEach((el) => {
   });
 });
 
-/* ============================================================
-   8. MICRO-DÉTAILS
-   ============================================================ */
-// les lettres du gros titre bougent au survol
 qa('.end__big span').forEach((el) => {
   el.addEventListener('mouseenter', () => gsap.to(el, { y: -10, duration: 0.4, ease: 'power3.out' }));
   el.addEventListener('mouseleave', () => gsap.to(el, { y: 0, duration: 0.6, ease: 'elastic.out(1,0.4)' }));
 });
 
-// recalcul global une fois tout chargé
 window.addEventListener('load', () => ScrollTrigger.refresh());
 </script>
 </body>
