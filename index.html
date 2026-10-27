@@ -464,7 +464,7 @@ const COUNT = 180;
 const BASE_PATH = "https://cdn.jsdelivr.net/gh/miteshkareja/fastfood_theme@main/frame/";
 const frames = new Array(COUNT);
 
-// Preload images
+// Preload images from jsDelivr
 for (let i = 0; i < COUNT; i++) {
   const img = new Image();
   img.decoding = "async";
@@ -531,6 +531,7 @@ ScrollTrigger.create({
 // Render Loop (Lerp for smoothness)
 function renderLoop() {
   if (isBuildActive) {
+    // 0.28 creates that smooth momentum effect
     currentFrame += (targetFrame - currentFrame) * 0.28;
     if (Math.abs(targetFrame - currentFrame) < 0.01) currentFrame = targetFrame;
     drawFrame(Math.round(currentFrame));
