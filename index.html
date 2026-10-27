@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>BURGUR — The Scroll Build</title>
-<meta name="description" content="BURGUR — the burger that builds itself as you scroll. Bun, sauce, lettuce, smashed patty, cheddar. Handmade.">
+<meta name="description" content="BURGUR — the burger that builds itself as you scroll.">
 <script>document.documentElement.classList.replace('no-js','js');</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,9 +12,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
-/* ============================================================
-   0. RESET / TOKENS
-   ============================================================ */
 *,*::before,*::after{box-sizing:border-box}
 :root{
   --cream:#F3EDE2;
@@ -28,59 +25,32 @@
 html,body{margin:0;padding:0}
 html{-webkit-text-size-adjust:100%;scroll-behavior:auto}
 body{
-  background:var(--cream);
-  color:var(--ink);
+  background:var(--cream); color:var(--ink);
   font-family:'Inter',system-ui,-apple-system,sans-serif;
-  font-size:16px;line-height:1.5;
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
+  font-size:16px; line-height:1.5; overflow-x:hidden; -webkit-font-smoothing:antialiased;
 }
 body.is-loading{overflow:hidden;height:100vh}
-img,video{display:block;max-width:100%}
+img,video,canvas{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 ol,ul{margin:0;padding:0;list-style:none}
 h1,h2,h3,p{margin:0}
 ::selection{background:var(--red);color:var(--cream)}
 
-.kicker{
-  font-family:'JetBrains Mono',ui-monospace,monospace;
-  font-size:clamp(10px,.9vw,12px);
-  text-transform:uppercase;letter-spacing:.18em;font-weight:500;
-}
+.kicker{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:clamp(10px,.9vw,12px);text-transform:uppercase;letter-spacing:.18em;font-weight:500;}
 .display{font-family:'Anton',Impact,sans-serif;text-transform:uppercase;line-height:.84;letter-spacing:-.015em;font-weight:400}
 
-/* ============================================================
-   1. GRAIN + CURSOR
-   ============================================================ */
-.grain{
-  position:fixed;inset:-50%;z-index:8000;pointer-events:none;opacity:.035;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation:grain 8s steps(6) infinite;
-}
-@keyframes grain{
-  0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}
-  60%{transform:translate(-2%,-2%)}80%{transform:translate(3%,1%)}100%{transform:translate(0,0)}
-}
-
+/* GRAIN + CURSOR */
+.grain{position:fixed;inset:-50%;z-index:8000;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 8s steps(6) infinite;}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-2%)}80%{transform:translate(3%,1%)}100%{transform:translate(0,0)}}
 .cursor{position:fixed;left:0;top:0;z-index:9500;pointer-events:none;opacity:0;mix-blend-mode:difference}
 .cursor__dot{position:absolute;left:0;top:0;width:8px;height:8px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);transition:opacity .25s}
-.cursor__label{
-  position:absolute;left:0;top:0;transform:translate(-50%,-50%) scale(.2);
-  background:#fff;color:#000;padding:9px 14px;border-radius:999px;white-space:nowrap;
-  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
-  transition:transform .35s cubic-bezier(.2,.9,.2,1);
-}
+.cursor__label{position:absolute;left:0;top:0;transform:translate(-50%,-50%) scale(.2);background:#fff;color:#000;padding:9px 14px;border-radius:999px;white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;transition:transform .35s cubic-bezier(.2,.9,.2,1);}
 .cursor.is-label .cursor__label{transform:translate(-50%,-50%) scale(1)}
 .cursor.is-label .cursor__dot{opacity:0}
 @media (hover:none){.cursor{display:none!important}}
 
-/* ============================================================
-   2. LOADER
-   ============================================================ */
-.loader{
-  position:fixed;inset:0;z-index:9000;background:var(--ink);color:var(--cream);
-  display:grid;place-items:center;will-change:transform;
-}
+/* LOADER */
+.loader{position:fixed;inset:0;z-index:9000;background:var(--ink);color:var(--cream);display:grid;place-items:center;will-change:transform;}
 .loader__inner{width:min(560px,84vw);text-align:center}
 .loader__k{color:rgba(243,237,226,.5);margin-bottom:18px}
 .loader__pct{font-family:'Anton',Impact,sans-serif;font-size:clamp(64px,15vw,170px);line-height:.85}
@@ -88,15 +58,8 @@ h1,h2,h3,p{margin:0}
 .loader__bar i{display:block;height:100%;background:var(--yellow);transform:scaleX(0);transform-origin:left}
 .loader__msg{margin-top:18px;font-size:13px;color:rgba(243,237,226,.55);font-family:'JetBrains Mono',monospace}
 
-/* ============================================================
-   3. TOPBAR
-   ============================================================ */
-.topbar{
-  position:fixed;top:0;left:0;right:0;z-index:7000;
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:calc(var(--pad)*.7) var(--pad);
-  color:#fff;mix-blend-mode:difference;pointer-events:none;
-}
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:7000;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:calc(var(--pad)*.7) var(--pad);color:#fff;mix-blend-mode:difference;pointer-events:none;}
 .topbar > *{pointer-events:auto}
 .topbar__logo{font-family:'Anton',Impact,sans-serif;font-size:clamp(18px,2vw,26px);letter-spacing:.02em;line-height:1}
 .topbar__logo span{font-size:.55em;vertical-align:super;margin-left:2px}
@@ -107,43 +70,22 @@ h1,h2,h3,p{margin:0}
 .topbar__link{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:9px 16px}
 .topbar__link svg{width:13px;height:13px}
 
-/* ============================================================
-   4. HERO
-   ============================================================ */
-.hero{
-  min-height:100svh;background:var(--cream);
-  display:flex;flex-direction:column;justify-content:space-between;
-  padding:calc(var(--pad) + 64px) var(--pad) var(--pad);
-  position:relative;overflow:hidden;
-}
+/* HERO */
+.hero{min-height:100svh;background:var(--cream);display:flex;flex-direction:column;justify-content:space-between;padding:calc(var(--pad) + 64px) var(--pad) var(--pad);position:relative;overflow:hidden;}
 .hero__top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
 .hero__kicker{max-width:32ch;line-height:1.9}
-.hero__badge{
-  display:inline-flex;align-items:center;gap:8px;background:var(--red);color:var(--cream);
-  padding:8px 14px;border-radius:999px;font-family:'JetBrains Mono',monospace;
-  font-size:10px;letter-spacing:.16em;text-transform:uppercase;
-}
-.hero__title{
-  font-size:clamp(4rem,23.5vw,23rem);
-  text-align:center;white-space:nowrap;
-  margin:clamp(10px,2vh,30px) 0;
-  color:var(--ink);
-}
+.hero__badge{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:var(--cream);padding:8px 14px;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+.hero__title{font-size:clamp(4rem,23.5vw,23rem);text-align:center;white-space:nowrap;margin:clamp(10px,2vh,30px) 0;color:var(--ink);}
 .ch{display:inline-block;overflow:hidden;vertical-align:bottom;line-height:.84}
 .ch__in{display:inline-block;transform:translateY(115%);will-change:transform}
-.hero__foot{
-  display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;
-  border-top:1px solid var(--line);padding-top:18px;
-}
+.hero__foot{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:18px;}
 .hero__tag{max-width:34ch;font-size:clamp(14px,1.3vw,18px);line-height:1.5;font-weight:500}
 .hero__scroll{display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
 .hero__scroll i{display:block;width:34px;height:1px;background:currentColor;position:relative;overflow:hidden}
 .hero__scroll i::after{content:"";position:absolute;inset:0;background:var(--red);animation:slide 1.6s cubic-bezier(.7,0,.3,1) infinite}
 @keyframes slide{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
 
-/* ============================================================
-   5. MARQUEE
-   ============================================================ */
+/* MARQUEE */
 .marquee{background:var(--red);color:var(--cream);overflow:hidden;padding:clamp(10px,1.4vw,18px) 0;border-top:1px solid rgba(0,0,0,.1)}
 .marquee__track{display:flex;width:max-content;animation:marq 26s linear infinite}
 .marquee__group{display:flex;align-items:center;gap:clamp(18px,3vw,52px);padding-right:clamp(18px,3vw,52px)}
@@ -152,138 +94,58 @@ h1,h2,h3,p{margin:0}
 .marquee__star{font-size:clamp(14px,1.6vw,26px);opacity:.7}
 @keyframes marq{to{transform:translateX(-50%)}}
 
-/* ============================================================
-   6. BUILD (Scroll Video)
-   ============================================================ */
-.build{
-  position:relative;
-  height:600vh;               /* 6 ingredients × 100vh */
-  background:var(--ink);
-}
-.build__sticky{
-  position:sticky;top:0;
-  height:100svh;overflow:hidden;
-  background:var(--ink);
-}
-.build__video{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:50% 50%;
-  will-change:transform;
-}
-.build__veil{
-  position:absolute;inset:0;pointer-events:none;
-  background:
-    linear-gradient(180deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 26%,rgba(0,0,0,0) 52%,rgba(0,0,0,.78) 100%);
-}
+/* BUILD SECTION (Canvas Sequence) */
+.build{position:relative;height:400vh;background:var(--ink);}
+.build__sticky{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--ink);}
+.build__canvas{width:100%;height:100%;display:block;object-fit:cover;}
+.build__veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 26%,rgba(0,0,0,0) 52%,rgba(0,0,0,.78) 100%);}
 .build__ui{position:absolute;inset:0;pointer-events:none;color:var(--cream)}
 
-/* --- Header --- */
-.build__head{
-  position:absolute;top:calc(var(--pad) + 44px);left:var(--pad);right:var(--pad);
-  display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;
-}
+.build__head{position:absolute;top:calc(var(--pad) + 44px);left:var(--pad);right:var(--pad);display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
 .build__head .kicker{color:rgba(243,237,226,.6)}
 .build__title{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.6rem,3.2vw,3rem);text-transform:uppercase;line-height:.92;margin-top:8px}
 .build__title em{font-style:normal;color:var(--yellow)}
 
-/* --- Steps (Large Text) --- */
 .build__steps{position:absolute;inset:0}
-.bstep{
-  position:absolute;left:var(--pad);bottom:clamp(96px,15vh,180px);
-  max-width:min(680px,82vw);
-  opacity:0;transform:translateY(28px);
-  transition:opacity .5s cubic-bezier(.2,.8,.2,1),transform .5s cubic-bezier(.2,.8,.2,1);
-  will-change:opacity,transform;
-}
+.bstep{position:absolute;left:var(--pad);bottom:clamp(96px,15vh,180px);max-width:min(680px,82vw);opacity:0;transform:translateY(28px);transition:opacity .4s cubic-bezier(.2,.8,.2,1),transform .4s cubic-bezier(.2,.8,.2,1);will-change:opacity,transform;}
 .bstep.is-active{opacity:1;transform:none}
-.bstep__num{
-  display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;
-  color:var(--yellow);margin-bottom:10px;
-}
-.bstep__name{
-  font-family:'Anton',Impact,sans-serif;
-  font-size:clamp(2.6rem,8.6vw,7.5rem);
-  text-transform:uppercase;line-height:.82;letter-spacing:-.02em;
-  color:var(--cream);
-}
+.bstep__num{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--yellow);margin-bottom:10px;}
+.bstep__name{font-family:'Anton',Impact,sans-serif;font-size:clamp(2.6rem,8.6vw,7.5rem);text-transform:uppercase;line-height:.82;letter-spacing:-.02em;color:var(--cream);}
 .bstep__desc{margin-top:14px;font-size:clamp(13px,1.4vw,17px);color:rgba(243,237,226,.68);max-width:34ch}
 
-/* --- Right Rail --- */
-.build__rail{
-  position:absolute;right:var(--pad);top:50%;transform:translateY(-50%);
-  display:none;flex-direction:column;gap:14px;align-items:flex-end;
-}
+.build__rail{position:absolute;right:var(--pad);top:50%;transform:translateY(-50%);display:none;flex-direction:column;gap:14px;align-items:flex-end;}
 @media(min-width:900px){.build__rail{display:flex}}
-.build__rail li{
-  display:flex;align-items:center;gap:10px;
-  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
-  color:rgba(243,237,226,.35);transition:color .4s;
-}
+.build__rail li{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,237,226,.35);transition:color .4s;}
 .build__rail li span{display:block;width:22px;height:1px;background:currentColor;transition:width .4s cubic-bezier(.2,.8,.2,1)}
 .build__rail li.is-active{color:var(--cream)}
 .build__rail li.is-active span{width:44px;background:var(--yellow)}
 
-/* --- Counter & Progress --- */
-.build__count{
-  position:absolute;right:var(--pad);bottom:clamp(96px,15vh,180px);
-  font-family:'Anton',Impact,sans-serif;font-size:clamp(2rem,4.5vw,4rem);line-height:1;
-  display:flex;align-items:baseline;gap:6px;
-}
+.build__count{position:absolute;right:var(--pad);bottom:clamp(96px,15vh,180px);font-family:'Anton',Impact,sans-serif;font-size:clamp(2rem,4.5vw,4rem);line-height:1;display:flex;align-items:baseline;gap:6px;}
 .build__count small{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:rgba(243,237,226,.45)}
-.build__progress{
-  position:absolute;left:var(--pad);right:var(--pad);bottom:calc(var(--pad)*.75);
-  height:2px;background:rgba(243,237,226,.2);overflow:hidden;
-}
+.build__progress{position:absolute;left:var(--pad);right:var(--pad);bottom:calc(var(--pad)*.75);height:2px;background:rgba(243,237,226,.2);overflow:hidden;}
 .build__progress i{display:block;height:100%;background:var(--yellow);transform:scaleX(0);transform-origin:left}
-.build__hint{
-  position:absolute;left:50%;bottom:calc(var(--pad)*.75 + 24px);transform:translateX(-50%);
-  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
-  color:rgba(243,237,226,.55);white-space:nowrap;
-}
+.build__hint{position:absolute;left:50%;bottom:calc(var(--pad)*.75 + 24px);transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(243,237,226,.55);white-space:nowrap;}
 
-/* ============================================================
-   7. MENU (Horizontal Scroll)
-   ============================================================ */
-.menu{
-  height:100svh;background:var(--cream);overflow:hidden;
-  display:flex;flex-direction:column;justify-content:center;gap:clamp(22px,4vh,52px);
-  position:relative;
-}
+/* MENU */
+.menu{height:100svh;background:var(--cream);overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:clamp(22px,4vh,52px);position:relative;}
 .menu__head{padding:0 var(--pad);display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
 .menu__title{font-size:clamp(2rem,5.2vw,4.4rem);margin-top:8px}
 .menu__title em{font-style:normal;color:var(--red)}
 .menu__track{display:flex;gap:clamp(14px,1.6vw,24px);padding:0 var(--pad);will-change:transform}
-.card{
-  flex:0 0 clamp(240px,27vw,360px);
-  height:min(58vh,470px);
-  border-radius:18px;background:#fff;border:1px solid var(--line);
-  padding:22px;display:flex;flex-direction:column;justify-content:space-between;
-  position:relative;overflow:hidden;
-  transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s;
-}
+.card{flex:0 0 clamp(240px,27vw,360px);height:min(58vh,470px);border-radius:18px;background:#fff;border:1px solid var(--line);padding:22px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s;}
 .card:hover{transform:translateY(-6px);box-shadow:0 24px 50px -24px rgba(18,16,15,.4)}
 .card__top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .card__num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:rgba(18,16,15,.4)}
 .card__price{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;background:var(--ink);color:var(--cream);padding:5px 10px;border-radius:999px}
-.card__disc{
-  position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
-  width:min(72%,240px);aspect-ratio:1;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),transparent 55%),var(--c,var(--red));
-  transition:transform .6s cubic-bezier(.2,.8,.2,1);
-}
+.card__disc{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:min(72%,240px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),transparent 55%),var(--c,var(--red));transition:transform .6s cubic-bezier(.2,.8,.2,1);}
 .card:hover .card__disc{transform:translate(-50%,-50%) scale(1.07) rotate(8deg)}
 .card__name{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.4rem,2.4vw,2.2rem);text-transform:uppercase;line-height:.9}
 .card__desc{font-size:13px;color:rgba(18,16,15,.6);margin-top:8px;line-height:1.45}
-.card--end{
-  display:grid;place-items:center;text-align:center;
-  background:var(--ink);color:var(--cream);border-color:transparent;
-}
+.card--end{display:grid;place-items:center;text-align:center;background:var(--ink);color:var(--cream);border-color:transparent;}
 .card--end p{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.6rem,3vw,2.6rem);text-transform:uppercase;line-height:.9}
 .card--end span{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.5;margin-top:10px;display:block}
 
-/* ============================================================
-   8. VISIT
-   ============================================================ */
+/* VISIT */
 .visit{background:var(--ink);color:var(--cream);padding:clamp(70px,12vh,140px) var(--pad)}
 .visit__grid{display:grid;grid-template-columns:1fr;gap:clamp(36px,6vw,80px)}
 @media(min-width:900px){.visit__grid{grid-template-columns:1.05fr .95fr;align-items:start}}
@@ -292,80 +154,36 @@ h1,h2,h3,p{margin:0}
 .visit__addr{font-style:normal;font-size:clamp(15px,1.4vw,19px);line-height:1.9;color:rgba(243,237,226,.75)}
 .visit__addr strong{color:var(--cream);font-weight:600}
 .hours{margin-top:34px;border-top:1px solid rgba(243,237,226,.16)}
-.hours__row{
-  display:flex;justify-content:space-between;align-items:center;gap:16px;
-  padding:16px 0;border-bottom:1px solid rgba(243,237,226,.16);
-  font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.2vw,14px);letter-spacing:.08em;
-}
+.hours__row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid rgba(243,237,226,.16);font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.2vw,14px);letter-spacing:.08em;}
 .hours__row dt{text-transform:uppercase;letter-spacing:.16em}
 .hours__row dd{display:flex;align-items:center;gap:10px;margin:0;color:rgba(243,237,226,.72)}
 .hours__row i{font-style:normal;opacity:.4}
 .visit__actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
-.btn{
-  display:inline-flex;align-items:center;gap:10px;
-  padding:14px 22px;border-radius:999px;border:1px solid transparent;
-  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-  transition:background .35s,color .35s,border-color .35s,transform .35s;
-  will-change:transform;
-}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:999px;border:1px solid transparent;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;transition:background .35s,color .35s,border-color .35s,transform .35s;will-change:transform;}
 .btn--solid{background:var(--cream);color:var(--ink)}
 .btn--solid:hover{background:var(--yellow)}
 .btn--line{border-color:rgba(243,237,226,.3);color:var(--cream)}
 .btn--line:hover{background:var(--cream);color:var(--ink)}
-.visit__map{
-  border-radius:18px;overflow:hidden;position:relative;aspect-ratio:4/3;
-  background:
-    radial-gradient(circle at 50% 62%,rgba(244,183,32,.22),transparent 42%),
-    repeating-linear-gradient(0deg,rgba(243,237,226,.07) 0 1px,transparent 1px 46px),
-    repeating-linear-gradient(90deg,rgba(243,237,226,.07) 0 1px,transparent 1px 46px),
-    #1B1815;
-  display:grid;place-items:center;
-}
-.visit__pin{
-  display:grid;place-items:center;width:64px;height:64px;border-radius:50%;
-  background:var(--red);color:var(--cream);font-family:'Anton',Impact,sans-serif;font-size:26px;
-  position:relative;
-}
-.visit__pin::after{
-  content:"";position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(210,38,48,.6);
-  animation:ripple 2.4s cubic-bezier(.2,.8,.2,1) infinite;
-}
+.visit__map{border-radius:18px;overflow:hidden;position:relative;aspect-ratio:4/3;background:radial-gradient(circle at 50% 62%,rgba(244,183,32,.22),transparent 42%),repeating-linear-gradient(0deg,rgba(243,237,226,.07) 0 1px,transparent 1px 46px),repeating-linear-gradient(90deg,rgba(243,237,226,.07) 0 1px,transparent 1px 46px),#1B1815;display:grid;place-items:center;}
+.visit__pin{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:var(--red);color:var(--cream);font-family:'Anton',Impact,sans-serif;font-size:26px;position:relative;}
+.visit__pin::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(210,38,48,.6);animation:ripple 2.4s cubic-bezier(.2,.8,.2,1) infinite;}
 @keyframes ripple{0%{transform:scale(.7);opacity:1}100%{transform:scale(1.6);opacity:0}}
 
-/* ============================================================
-   9. FOOTER
-   ============================================================ */
+/* FOOTER */
 .end{background:var(--cream);padding:clamp(60px,10vh,120px) var(--pad) calc(var(--pad)*.8);overflow:hidden}
-.end__big{
-  font-family:'Anton',Impact,sans-serif;
-  font-size:clamp(3.4rem,17vw,17rem);line-height:.8;text-transform:uppercase;
-  letter-spacing:-.02em;text-align:center;color:var(--ink);
-  margin:clamp(24px,5vh,60px) 0;
-}
+.end__big{font-family:'Anton',Impact,sans-serif;font-size:clamp(3.4rem,17vw,17rem);line-height:.8;text-transform:uppercase;letter-spacing:-.02em;text-align:center;color:var(--ink);margin:clamp(24px,5vh,60px) 0;}
 .end__big span{display:inline-block;transition:transform .5s cubic-bezier(.2,.8,.2,1),color .5s}
 .end__big span:hover{color:var(--red)}
-.end__bar{
-  display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;
-  background:var(--red);color:var(--cream);border-radius:16px;padding:clamp(20px,3vw,34px);
-  transition:transform .5s cubic-bezier(.2,.8,.2,1);
-}
+.end__bar{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;background:var(--red);color:var(--cream);border-radius:16px;padding:clamp(20px,3vw,34px);transition:transform .5s cubic-bezier(.2,.8,.2,1);}
 .end__bar:hover{transform:scale(.995)}
 .end__bar-k{font-size:clamp(13px,1.5vw,17px);max-width:46ch;line-height:1.4}
 .end__bar-url{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.2rem,2.4vw,2rem);text-transform:uppercase;display:inline-flex;align-items:center;gap:10px}
 .end__bar-url svg{width:18px;height:18px}
-.end__meta{
-  display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;
-  border-top:1px solid var(--line);margin-top:clamp(30px,5vh,60px);padding-top:22px;
-}
+.end__meta{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:clamp(30px,5vh,60px);padding-top:22px;}
 .end__links{display:flex;gap:clamp(14px,2vw,28px);flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
 .end__links a{opacity:.7;transition:opacity .3s}
 .end__links a:hover{opacity:1}
 .end__credit{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.55}
-
-/* ============================================================
-   10. UTIL
-   ============================================================ */
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
 @media (prefers-reduced-motion:reduce){
   .marquee__track{animation:none}
@@ -378,7 +196,6 @@ h1,h2,h3,p{margin:0}
 <body class="is-loading">
 
 <div class="grain" aria-hidden="true"></div>
-
 <div class="cursor" data-cursor aria-hidden="true">
   <span class="cursor__dot"></span>
   <span class="cursor__label"></span>
@@ -389,7 +206,7 @@ h1,h2,h3,p{margin:0}
     <p class="loader__k kicker">BURGUR · Build Process</p>
     <p class="loader__pct" data-loader-pct>0%</p>
     <div class="loader__bar"><i data-loader-bar></i></div>
-    <p class="loader__msg" data-loader-msg>Heating the grill...</p>
+    <p class="loader__msg" data-loader-msg>Loading frames...</p>
   </div>
 </div>
 
@@ -406,15 +223,12 @@ h1,h2,h3,p{margin:0}
 </header>
 
 <main id="top">
-
   <section class="hero">
     <div class="hero__top">
       <p class="kicker hero__kicker">Brioche Bun · Smashed Beef<br>Melted Cheddar · House Sauce</p>
       <span class="hero__badge" data-reveal>Handmade · 100% Beef</span>
     </div>
-
     <h1 class="hero__title display" data-hero-title>BURGUR</h1>
-
     <div class="hero__foot">
       <p class="hero__tag" data-reveal>A burger isn't told. It's built—ingredient by ingredient, right before your eyes.</p>
       <a class="hero__scroll" href="#build">Scroll to build <i aria-hidden="true"></i></a>
@@ -447,18 +261,8 @@ h1,h2,h3,p{margin:0}
   <section class="build" id="build">
     <div class="build__sticky">
       
-      <!-- ⬇️ YOUR GITHUB VIDEO URL IS ADDED HERE ⬇️ -->
-      <video
-        id="build-video"
-        class="build__video"
-        src="https://cdn.jsdelivr.net/gh/miteshkareja/fastfood_theme@main/burgur.mp4"
-        muted
-        playsinline
-        preload="auto"
-        disablepictureinpicture
-        disableremoteplayback
-        aria-hidden="true"
-        tabindex="-1"></video>
+      <!-- CANVAS FOR IMAGE SEQUENCE -->
+      <canvas id="build-canvas" class="build__canvas"></canvas>
 
       <div class="build__veil" aria-hidden="true"></div>
 
@@ -471,36 +275,12 @@ h1,h2,h3,p{margin:0}
         </div>
 
         <ol class="build__steps">
-          <li class="bstep" data-step>
-            <span class="bstep__num">01 / 06</span>
-            <h3 class="bstep__name">The Bun</h3>
-            <p class="bstep__desc">Toasted brioche. The foundation of everything.</p>
-          </li>
-          <li class="bstep" data-step>
-            <span class="bstep__num">02 / 06</span>
-            <h3 class="bstep__name">The Sauce</h3>
-            <p class="bstep__desc">Secret recipe. A little smoky, a little spicy.</p>
-          </li>
-          <li class="bstep" data-step>
-            <span class="bstep__num">03 / 06</span>
-            <h3 class="bstep__name">The Lettuce</h3>
-            <p class="bstep__desc">Crisp and cold. It holds the wall.</p>
-          </li>
-          <li class="bstep" data-step>
-            <span class="bstep__num">04 / 06</span>
-            <h3 class="bstep__name">The Patty</h3>
-            <p class="bstep__desc">Smashed on the griddle. Two minutes per side.</p>
-          </li>
-          <li class="bstep" data-step>
-            <span class="bstep__num">05 / 06</span>
-            <h3 class="bstep__name">The Cheese</h3>
-            <p class="bstep__desc">Melted. Oozing. It has to overflow. Always.</p>
-          </li>
-          <li class="bstep" data-step>
-            <span class="bstep__num">06 / 06</span>
-            <h3 class="bstep__name">The Top Bun</h3>
-            <p class="bstep__desc">Close it up. It's ready. Let's eat!</p>
-          </li>
+          <li class="bstep" data-step><span class="bstep__num">01 / 06</span><h3 class="bstep__name">The Bun</h3><p class="bstep__desc">Toasted brioche. The foundation of everything.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">02 / 06</span><h3 class="bstep__name">The Sauce</h3><p class="bstep__desc">Secret recipe. A little smoky, a little spicy.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">03 / 06</span><h3 class="bstep__name">The Lettuce</h3><p class="bstep__desc">Crisp and cold. It holds the wall.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">04 / 06</span><h3 class="bstep__name">The Patty</h3><p class="bstep__desc">Smashed on the griddle. Two minutes per side.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">05 / 06</span><h3 class="bstep__name">The Cheese</h3><p class="bstep__desc">Melted. Oozing. It has to overflow. Always.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">06 / 06</span><h3 class="bstep__name">The Top Bun</h3><p class="bstep__desc">Close it up. It's ready. Let's eat!</p></li>
         </ol>
 
         <ul class="build__rail" aria-hidden="true">
@@ -512,14 +292,10 @@ h1,h2,h3,p{margin:0}
           <li data-dot><span></span>Top</li>
         </ul>
 
-        <div class="build__count" aria-hidden="true">
-          <b data-build-num>01</b><small>/ 06</small>
-        </div>
-
+        <div class="build__count" aria-hidden="true"><b data-build-num>01</b><small>/ 06</small></div>
         <div class="build__progress" aria-hidden="true"><i data-build-bar></i></div>
         <p class="build__hint" data-build-hint>Scroll to build</p>
       </div>
-
     </div>
   </section>
 
@@ -533,66 +309,13 @@ h1,h2,h3,p{margin:0}
     </div>
 
     <div class="menu__track" data-menu-track>
-      <article class="card">
-        <div class="card__top"><span class="card__num">01</span><span class="card__price">$12.00</span></div>
-        <div class="card__disc" style="--c:#D22630" aria-hidden="true"></div>
-        <div>
-          <h3 class="card__name">The Classic</h3>
-          <p class="card__desc">Smashed beef, cheddar, lettuce, tomato, house sauce.</p>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="card__top"><span class="card__num">02</span><span class="card__price">$15.00</span></div>
-        <div class="card__disc" style="--c:#F4B720" aria-hidden="true"></div>
-        <div>
-          <h3 class="card__name">The Double</h3>
-          <p class="card__desc">Two patties, double cheddar, caramelized onions.</p>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="card__top"><span class="card__num">03</span><span class="card__price">$14.00</span></div>
-        <div class="card__disc" style="--c:#3F6B45" aria-hidden="true"></div>
-        <div>
-          <h3 class="card__name">The Veggie</h3>
-          <p class="card__desc">Chickpea patty, avocado, pickles, lemon yogurt.</p>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="card__top"><span class="card__num">04</span><span class="card__price">$13.00</span></div>
-        <div class="card__disc" style="--c:#E07A3F" aria-hidden="true"></div>
-        <div>
-          <h3 class="card__name">The Chicken</h3>
-          <p class="card__desc">Crispy chicken, white cabbage, honey-mustard sauce.</p>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="card__top"><span class="card__num">05</span><span class="card__price">$15.00</span></div>
-        <div class="card__disc" style="--c:#8E4B2E" aria-hidden="true"></div>
-        <div>
-          <h3 class="card__name">The Bacon</h3>
-          <p class="card__desc">Smoked bacon, cheddar, crispy onions, BBQ sauce.</p>
-        </div>
-      </article>
-
-      <article class="card">
-        <div class="card__top"><span class="card__num">06</span><span class="card__price">$18.00</span></div>
-        <div class="card__disc" style="--c:#B21236" aria-hidden="true"></div>
-        <div>
-          <h3 class="card__name">The Chef</h3>
-          <p class="card__desc">Whatever the chef found this morning. Trust us.</p>
-        </div>
-      </article>
-
-      <div class="card card--end">
-        <div>
-          <p>Come taste!</p>
-          <span>We are waiting.</span>
-        </div>
-      </div>
+      <article class="card"><div class="card__top"><span class="card__num">01</span><span class="card__price">$12.00</span></div><div class="card__disc" style="--c:#D22630" aria-hidden="true"></div><div><h3 class="card__name">The Classic</h3><p class="card__desc">Smashed beef, cheddar, lettuce, tomato, house sauce.</p></div></article>
+      <article class="card"><div class="card__top"><span class="card__num">02</span><span class="card__price">$15.00</span></div><div class="card__disc" style="--c:#F4B720" aria-hidden="true"></div><div><h3 class="card__name">The Double</h3><p class="card__desc">Two patties, double cheddar, caramelized onions.</p></div></article>
+      <article class="card"><div class="card__top"><span class="card__num">03</span><span class="card__price">$14.00</span></div><div class="card__disc" style="--c:#3F6B45" aria-hidden="true"></div><div><h3 class="card__name">The Veggie</h3><p class="card__desc">Chickpea patty, avocado, pickles, lemon yogurt.</p></div></article>
+      <article class="card"><div class="card__top"><span class="card__num">04</span><span class="card__price">$13.00</span></div><div class="card__disc" style="--c:#E07A3F" aria-hidden="true"></div><div><h3 class="card__name">The Chicken</h3><p class="card__desc">Crispy chicken, white cabbage, honey-mustard sauce.</p></div></article>
+      <article class="card"><div class="card__top"><span class="card__num">05</span><span class="card__price">$15.00</span></div><div class="card__disc" style="--c:#8E4B2E" aria-hidden="true"></div><div><h3 class="card__name">The Bacon</h3><p class="card__desc">Smoked bacon, cheddar, crispy onions, BBQ sauce.</p></div></article>
+      <article class="card"><div class="card__top"><span class="card__num">06</span><span class="card__price">$18.00</span></div><div class="card__disc" style="--c:#B21236" aria-hidden="true"></div><div><h3 class="card__name">The Chef</h3><p class="card__desc">Whatever the chef found this morning. Trust us.</p></div></article>
+      <div class="card card--end"><div><p>Come taste!</p><span>We are waiting.</span></div></div>
     </div>
   </section>
 
@@ -601,41 +324,20 @@ h1,h2,h3,p{margin:0}
       <div>
         <p class="kicker" style="color:rgba(243,237,226,.55)">Find us here</p>
         <h2 class="visit__title display">12 Grill<br><em>Street</em></h2>
-
-        <address class="visit__addr">
-          <strong>BURGUR</strong><br>
-          12 Grill Street<br>
-          2824 Vicques · Jura
-        </address>
-
+        <address class="visit__addr"><strong>BURGUR</strong><br>12 Grill Street<br>2824 Vicques · Jura</address>
         <dl class="hours">
-          <div class="hours__row">
-            <dt>Mon → Thu</dt>
-            <dd><span>11:30 AM</span><i>→</i><span>10:00 PM</span></dd>
-          </div>
-          <div class="hours__row">
-            <dt>Fri → Sat</dt>
-            <dd><span>11:30 AM</span><i>→</i><span>11:30 PM</span></dd>
-          </div>
-          <div class="hours__row">
-            <dt>Sunday</dt>
-            <dd><span>12:00 PM</span><i>→</i><span>09:00 PM</span></dd>
-          </div>
+          <div class="hours__row"><dt>Mon → Thu</dt><dd><span>11:30 AM</span><i>→</i><span>10:00 PM</span></dd></div>
+          <div class="hours__row"><dt>Fri → Sat</dt><dd><span>11:30 AM</span><i>→</i><span>11:30 PM</span></dd></div>
+          <div class="hours__row"><dt>Sunday</dt><dd><span>12:00 PM</span><i>→</i><span>09:00 PM</span></dd></div>
         </dl>
-
         <div class="visit__actions">
           <a class="btn btn--solid" href="https://maps.google.com" target="_blank" rel="noopener" data-magnetic data-cursor-text="Directions">Directions</a>
           <a class="btn btn--line" href="tel:+41324356415" data-magnetic data-cursor-text="Call">+41 32 435 64 15</a>
-          <a class="btn btn--line" href="#menu" data-magnetic data-cursor-text="Yum">Order</a>
         </div>
       </div>
-
-      <div class="visit__map" role="img" aria-label="Map to BURGUR restaurant">
-        <div class="visit__pin" aria-hidden="true">B</div>
-      </div>
+      <div class="visit__map" role="img" aria-label="Map to BURGUR restaurant"><div class="visit__pin" aria-hidden="true">B</div></div>
     </div>
   </section>
-
 </main>
 
 <footer class="end">
@@ -643,16 +345,9 @@ h1,h2,h3,p{margin:0}
     <span class="end__bar-k">BURGUR is also about house fries, the terrace, and sauces with a kick.</span>
     <span class="end__bar-url">Back to top <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   </a>
-
   <p class="end__big display" aria-label="¡Burgur!"><span aria-hidden="true">¡BURGUR!</span></p>
-
   <div class="end__meta">
-    <p class="end__links">
-      <a href="#menu">Menu</a>
-      <a href="#acces">Find Us</a>
-      <a href="#">Legal</a>
-      <span style="opacity:.45">© 2026 BURGUR</span>
-    </p>
+    <p class="end__links"><a href="#menu">Menu</a><a href="#acces">Find Us</a><a href="#">Legal</a><span style="opacity:.45">© 2026 BURGUR</span></p>
     <p class="end__credit">Made with buns and scroll</p>
   </div>
 </footer>
@@ -668,14 +363,14 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
 gsap.registerPlugin(ScrollTrigger);
 
+// 1. LENIS SMOOTH SCROLL
 let lenis = null;
 if (window.Lenis) {
   lenis = new Lenis({
-    duration: 1.15,
+    duration: 0.8,
+    wheelMultiplier: 1.2,
     smoothWheel: true,
-    wheelMultiplier: 1,
-    touchMultiplier: 1.6,
-    lerp: 0.09
+    lerp: 0.1
   });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
@@ -690,11 +385,12 @@ qa('a[href^="#"]').forEach((a) => {
     const target = q(id);
     if (!target) return;
     e.preventDefault();
-    if (lenis) lenis.scrollTo(target, { offset: 0, duration: 1.2 });
+    if (lenis) lenis.scrollTo(target, { offset: 0, duration: 1 });
     else target.scrollIntoView({ behavior: 'smooth' });
   });
 });
 
+// 2. HERO TEXT SPLIT
 function splitChars(el) {
   const text = el.textContent.trim();
   el.textContent = '';
@@ -713,25 +409,18 @@ function splitChars(el) {
 }
 const heroChars = splitChars(q('[data-hero-title]'));
 
+// 3. LOADER
 const loader    = q('[data-loader]');
 const pctEl     = q('[data-loader-pct]');
 const barEl     = q('[data-loader-bar]');
 const msgEl     = q('[data-loader-msg]');
-
 const pct = { v: 0 };
 let loaderClosed = false;
 
-const msgs = [
-  'Heating the grill...',
-  'Slicing the bun...',
-  'Cheddar is melting...',
-  'Almost ready. Let\'s go.'
-];
+const msgs = ['Heating the grill...', 'Slicing the bun...', 'Cheddar is melting...', 'Almost ready. Let\'s go.'];
 
 gsap.to(pct, {
-  v: 92,
-  duration: 1.9,
-  ease: 'power1.out',
+  v: 92, duration: 1.5, ease: 'power1.out',
   onUpdate() {
     pctEl.textContent = Math.round(pct.v) + '%';
     if (barEl) barEl.style.transform = 'scaleX(' + (pct.v / 100) + ')';
@@ -749,11 +438,8 @@ function introHero() {
 function closeLoader() {
   if (loaderClosed) return;
   loaderClosed = true;
-
   gsap.to(pct, {
-    v: 100,
-    duration: 0.35,
-    ease: 'power2.out',
+    v: 100, duration: 0.35, ease: 'power2.out',
     onUpdate() {
       pctEl.textContent = Math.round(pct.v) + '%';
       if (barEl) barEl.style.transform = 'scaleX(' + (pct.v / 100) + ')';
@@ -761,63 +447,110 @@ function closeLoader() {
     onComplete() {
       document.body.classList.remove('is-loading');
       if (lenis) lenis.start();
-
       gsap.timeline()
         .to('.loader__inner', { y: -30, opacity: 0, duration: 0.5, ease: 'power2.inOut' })
         .to(loader, { yPercent: -100, duration: 0.95, ease: 'expo.inOut' }, '-=0.2')
         .set(loader, { display: 'none' })
         .add(introHero, '-=0.65');
-
       ScrollTrigger.refresh();
     }
   });
 }
 
-const video = q('#build-video');
-let videoReady = false;
-let videoDuration = 0;
-let buildActive = false;
-const scrub = { t: 0, target: 0 };
+// 4. CANVAS IMAGE SEQUENCE LOGIC
+const canvas = document.getElementById('build-canvas');
+const ctx = canvas.getContext('2d');
+const COUNT = 180;
+const BASE_PATH = "https://cdn.jsdelivr.net/gh/miteshkareja/fastfood_theme@main/frame/";
+const frames = new Array(COUNT);
 
-function onDuration() {
-  if (videoReady) return;
-  if (video.duration && isFinite(video.duration) && video.duration > 0) {
-    videoDuration = video.duration;
-    videoReady = true;
-    video.pause();
-    closeLoader();
-  }
+// Preload images
+for (let i = 0; i < COUNT; i++) {
+  const img = new Image();
+  img.decoding = "async";
+  // Format: frame-001.webp
+  img.src = BASE_PATH + "frame-" + String(i + 1).padStart(3, '0') + ".webp";
+  frames[i] = img;
 }
 
-video.addEventListener('loadedmetadata', onDuration);
-video.addEventListener('durationchange', onDuration);
-video.addEventListener('canplay', onDuration);
-if (video.readyState >= 1) onDuration();
-
-setTimeout(closeLoader, 7000);
-
-let primed = false;
-function primeVideo() {
-  if (primed || videoReady === false) return;
-  primed = true;
-  const p = video.play();
-  if (p && typeof p.then === 'function') {
-    p.then(() => video.pause()).catch(() => {});
-  } else {
-    video.pause();
-  }
+// Canvas Resizing
+function sizeCanvas() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = canvas.clientWidth * dpr;
+  canvas.height = canvas.clientHeight * dpr;
 }
-['pointerdown', 'touchstart', 'scroll', 'keydown'].forEach((ev) => {
-  window.addEventListener(ev, primeVideo, { once: true, passive: true });
+sizeCanvas();
+window.addEventListener("resize", sizeCanvas);
+
+// Draw Frame (Object-fit: cover logic)
+function drawFrame(index) {
+  const img = frames[index];
+  if (!img || !img.complete || !img.naturalWidth) return;
+  
+  const cw = canvas.width;
+  const ch = canvas.height;
+  const r = img.naturalWidth / img.naturalHeight;
+  
+  let w = cw;
+  let h = cw / r;
+  
+  if (h < ch) {
+    h = ch;
+    w = ch * r;
+  }
+  
+  ctx.clearRect(0, 0, cw, ch);
+  ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+}
+
+// Variables for Scrolling
+let targetFrame = 0;
+let currentFrame = 0;
+let isBuildActive = false;
+
+// GSAP ScrollTrigger for Frame Mapping
+ScrollTrigger.create({
+  trigger: '.build',
+  start: 'top top',
+  end: 'bottom bottom',
+  onUpdate(self) {
+    const p = self.progress;
+    targetFrame = p * (COUNT - 1); // Map 0-1 to 0-179
+
+    // Update UI
+    if (q('[data-build-bar]')) q('[data-build-bar]').style.transform = 'scaleX(' + p + ')';
+    const idx = clamp(Math.floor(p * 6 + 0.0001), 0, 5);
+    setStep(idx);
+    if (q('[data-build-hint]')) q('[data-build-hint]').style.opacity = p > 0.03 ? 0 : 1;
+  },
+  onToggle(self) {
+    isBuildActive = self.isActive;
+  }
 });
 
-const barEl2  = q('[data-build-bar]');
-const numEl   = q('[data-build-num]');
-const hintEl  = q('[data-build-hint]');
-const steps   = qa('[data-step]');
-const dots    = qa('[data-dot]');
-const STEP_COUNT = steps.length;
+// Render Loop (Lerp for smoothness)
+function renderLoop() {
+  if (isBuildActive) {
+    currentFrame += (targetFrame - currentFrame) * 0.28;
+    if (Math.abs(targetFrame - currentFrame) < 0.01) currentFrame = targetFrame;
+    drawFrame(Math.round(currentFrame));
+  }
+  requestAnimationFrame(renderLoop);
+}
 
+// Start sequence when first image loads
+frames[0].onload = () => {
+  drawFrame(0);
+  closeLoader();
+  requestAnimationFrame(renderLoop);
+};
+// Fallback if load takes too long
+setTimeout(closeLoader, 5000);
+
+// 5. UI TEXT UPDATES
+const steps = qa('[data-step]');
+const dots = qa('[data-dot]');
+const numEl = q('[data-build-num]');
 let currentStep = -1;
 
 function setStep(i) {
@@ -827,47 +560,12 @@ function setStep(i) {
   dots.forEach((el, k) => el.classList.toggle('is-active', k === i));
   if (numEl) numEl.textContent = String(i + 1).padStart(2, '0');
 }
-
-ScrollTrigger.create({
-  trigger: '.build',
-  start: 'top top',
-  end: 'bottom bottom',
-  onUpdate(self) {
-    scrub.target = self.progress;
-  },
-  onToggle(self) {
-    buildActive = self.isActive;
-  }
-});
-
-gsap.ticker.add(() => {
-  scrub.t += (scrub.target - scrub.t) * 0.14;
-  if (Math.abs(scrub.target - scrub.t) < 0.0004) scrub.t = scrub.target;
-
-  const p = scrub.t;
-
-  if (videoReady && buildActive) {
-    const t = clamp(p * videoDuration, 0, videoDuration - 0.05);
-    if (Math.abs(video.currentTime - t) > 0.008) {
-      try { video.currentTime = t; } catch (e) {}
-    }
-  }
-
-  if (barEl2) barEl2.style.transform = 'scaleX(' + p + ')';
-
-  const idx = clamp(Math.floor(p * STEP_COUNT + 0.0001), 0, STEP_COUNT - 1);
-  setStep(idx);
-
-  if (hintEl) hintEl.style.opacity = p > 0.03 ? 0 : 1;
-});
-
 setStep(0);
 
+// 6. MENU HORIZONTAL SCROLL
 const menuTrack = q('[data-menu-track]');
-
 if (menuTrack) {
   const getDistance = () => Math.max(0, menuTrack.scrollWidth - window.innerWidth + 32);
-
   gsap.to(menuTrack, {
     x: () => -getDistance(),
     ease: 'none',
@@ -883,29 +581,16 @@ if (menuTrack) {
   });
 }
 
+// 7. REVEALS
 qa('[data-reveal]').forEach((el) => {
-  gsap.from(el, {
-    y: 26,
-    opacity: 0,
-    duration: 0.9,
-    ease: 'power3.out',
-    scrollTrigger: { trigger: el, start: 'top 90%' }
-  });
+  gsap.from(el, { y: 26, opacity: 0, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
 });
-
 gsap.utils.toArray('.visit__addr, .hours, .visit__actions, .visit__map').forEach((el, i) => {
-  gsap.from(el, {
-    y: 30,
-    opacity: 0,
-    duration: 0.9,
-    delay: i * 0.06,
-    ease: 'power3.out',
-    scrollTrigger: { trigger: el, start: 'top 92%' }
-  });
+  gsap.from(el, { y: 30, opacity: 0, duration: 0.9, delay: i * 0.06, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 92%' } });
 });
 
+// 8. CURSOR & MAGNETIC
 const cursorEl = q('[data-cursor]');
-
 if (cursorEl && window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
   const labelEl = q('.cursor__label', cursorEl);
   const xTo = gsap.quickTo(cursorEl, 'x', { duration: 0.35, ease: 'power3' });
@@ -913,38 +598,20 @@ if (cursorEl && window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
 
   window.addEventListener('mousemove', (e) => {
     gsap.set(cursorEl, { opacity: 1 });
-    xTo(e.clientX);
-    yTo(e.clientY);
+    xTo(e.clientX); yTo(e.clientY);
   });
-
   qa('[data-cursor-text]').forEach((el) => {
-    el.addEventListener('mouseenter', () => {
-      labelEl.textContent = el.dataset.cursorText || '';
-      cursorEl.classList.add('is-label');
-    });
+    el.addEventListener('mouseenter', () => { labelEl.textContent = el.dataset.cursorText || ''; cursorEl.classList.add('is-label'); });
     el.addEventListener('mouseleave', () => cursorEl.classList.remove('is-label'));
   });
 }
-
 qa('[data-magnetic]').forEach((el) => {
   const strength = 0.32;
   el.addEventListener('mousemove', (e) => {
     const r = el.getBoundingClientRect();
-    gsap.to(el, {
-      x: (e.clientX - r.left - r.width / 2) * strength,
-      y: (e.clientY - r.top - r.height / 2) * strength,
-      duration: 0.45,
-      ease: 'power3.out'
-    });
+    gsap.to(el, { x: (e.clientX - r.left - r.width / 2) * strength, y: (e.clientY - r.top - r.height / 2) * strength, duration: 0.45, ease: 'power3.out' });
   });
-  el.addEventListener('mouseleave', () => {
-    gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)' });
-  });
-});
-
-qa('.end__big span').forEach((el) => {
-  el.addEventListener('mouseenter', () => gsap.to(el, { y: -10, duration: 0.4, ease: 'power3.out' }));
-  el.addEventListener('mouseleave', () => gsap.to(el, { y: 0, duration: 0.6, ease: 'elastic.out(1,0.4)' }));
+  el.addEventListener('mouseleave', () => gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)' }));
 });
 
 window.addEventListener('load', () => ScrollTrigger.refresh());
