@@ -843,8 +843,8 @@ ScrollTrigger.create({
     targetFrame = p * (COUNT - 1);
 
     if (q('[data-build-bar]')) q('[data-build-bar]').style.transform = 'scaleX(' + p + ')';
-    const idx = clamp(Math.floor(p * 6 + 0.0001), 0, 5);
-    setStep(idx);
+    // Keep the UI step label tied to the rendered frame, not raw scroll progress.
+    // This prevents the heading/count from racing ahead of the burger animation.
     if (q('[data-build-hint]')) q('[data-build-hint]').style.opacity = p > 0.03 ? 0 : 1;
   },
   onToggle(self) {
@@ -854,9 +854,20 @@ ScrollTrigger.create({
 
 function renderLoop() {
   if (isBuildActive) {
-    currentFrame += (targetFrame - currentFrame) * 0.105;
-    if (Math.abs(targetFrame - currentFrame) < 0.035) currentFrame = targetFrame;
-    drawFrame(Math.round(currentFrame));
+    // Smoothly chase the target so the last frames are not skipped.
+    currentFrame += (targetFrame - currentFrame) * 0.075;
+    if (Math.abs(targetFrame - currentFrame) < 0.025) currentFrame = targetFrame;
+
+    const renderedFrame = Math.round(currentFrame);
+    drawFrame(renderedFrame);
+
+    // Six step labels now change only as the matching frame section is reached.
+    const stepFromRenderedFrame = clamp(
+      Math.floor((renderedFrame / (COUNT - 1)) * 6),
+      0,
+      5
+    );
+    setStep(stepFromRenderedFrame);
   }
   requestAnimationFrame(renderLoop);
 }
