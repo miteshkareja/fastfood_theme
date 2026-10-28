@@ -255,7 +255,8 @@ h1,h2,h3,p{margin:0}
 
 /* ORIGINAL ART DIRECTION — warm premium palette, distinct from the reference */
 :root{--ink:#211B2D;--cream:#F3EBDD;--red:#E45B43;--yellow:#E8B85B;--green:#536B55;}
-.hero{background:radial-gradient(ellipse at 50% 42%, #FFF9EF 0%, #F3EBDD 62%, #E8DCCB 100%);}
+:root{--hero-surface:radial-gradient(ellipse at 50% 42%, #FFF9EF 0%, #F3EBDD 62%, #E8DCCB 100%);}
+.hero{background:var(--hero-surface);}
 /* Keep the 3D objects above the large title so every loaded model remains visible. */
 #hero-canvas{z-index:4;opacity:1;pointer-events:none;}
 .hero__ui{z-index:2;}
@@ -267,6 +268,24 @@ h1,h2,h3,p{margin:0}
 @keyframes ribbon-float{from{transform:translate(-50%,-48%) rotate(-5deg)}to{transform:translate(-50%,-53%) rotate(2deg)}}
 @media(max-width:640px){.hero-ribbon{width:150vw;top:50%;}.hero-ribbon text{font-size:29px;letter-spacing:4px;}}
 @media(prefers-reduced-motion:reduce){.hero-ribbon{animation:none;}}
+
+/* BUILD SECTION — match the hero's warm cream gradient */
+.build,.build__sticky{background:var(--hero-surface);}
+/* Keep the sequence crisp; no dark overlay over the frames. */
+.build__veil{background:linear-gradient(180deg,rgba(255,249,239,.10) 0%,rgba(243,235,221,0) 24%,rgba(243,235,221,0) 72%,rgba(232,220,203,.14) 100%);}
+.build__ui{color:var(--ink);}
+.build__head .kicker{color:rgba(33,27,45,.58);}
+.build__title em{color:#D99735;}
+.bstep__num{color:#B77B22;}
+.bstep__name{color:var(--ink);}
+.bstep__desc{color:rgba(33,27,45,.68);}
+.build__rail li{color:rgba(33,27,45,.42);}
+.build__rail li.is-active{color:var(--ink);}
+.build__rail li.is-active span{background:#D99735;}
+.build__count small{color:rgba(33,27,45,.48);}
+.build__progress{background:rgba(33,27,45,.18);}
+.build__progress i{background:#D99735;}
+.build__hint{color:rgba(33,27,45,.58);}
 
 </style>
 </head>
