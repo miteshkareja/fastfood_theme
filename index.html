@@ -24,7 +24,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box}
 :root{
-  --cream:#F5EBE1; /* Updated to a slightly richer solid color */
+  --cream:#F5EBE1;
   --ink:#12100F;
   --red:#D22630;
   --yellow:#F4B720;
@@ -261,9 +261,8 @@ h1,h2,h3,p{margin:0}
 </div>
 
 <header class="topbar">
-  <!-- Changed to logo.png -->
   <a class="topbar__logo" href="#top" data-magnetic>
-    <img src="logo.png" alt="BURGUR" onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\'font-family:Anton; font-size:24px;\'>BURGUR®</span>';">
+    <img src="logo.png" alt="BURGUR" onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\'font-family:Anton; font-size:24px; color:#fff;\'>BURGUR®</span>';">
   </a>
   <p class="topbar__status">
     <span class="topbar__dot" aria-hidden="true"></span>
@@ -277,10 +276,8 @@ h1,h2,h3,p{margin:0}
 
 <main id="top">
   <section class="hero">
-    <!-- Three.js Canvas for 3D Models -->
     <canvas id="hero-canvas"></canvas>
 
-    <!-- Hero Content -->
     <div class="hero__ui">
       <div class="hero__top">
         <p class="kicker hero__kicker">Brioche Bun · Crispy Chicken<br>Melted Cheddar · House Sauce</p>
@@ -367,7 +364,6 @@ h1,h2,h3,p{margin:0}
     </div>
 
     <div class="menu__track" data-menu-track>
-      <!-- Added menu images -->
       <article class="card">
         <div class="card__top"><span class="card__num">01</span><span class="card__price">$12.00</span></div>
         <div class="card__media"><img src="menu1.png" alt="The Classic" onerror="this.style.display='none'"></div>
@@ -453,17 +449,14 @@ h1,h2,h3,p{margin:0}
   const canvas = document.getElementById('hero-canvas');
   const scene = new THREE.Scene();
   
-  // Setup Camera
   const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
   camera.position.z = 12;
 
-  // Setup Renderer
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-  // Lighting
   const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
   scene.add(ambientLight);
   
@@ -478,22 +471,18 @@ h1,h2,h3,p{margin:0}
   const loader = new GLTFLoader();
   const models = [];
   
-  // List of your GLB files
   const glbFiles = [
     'tomato.glb', 'cucumber.glb', 'chicken.glb', 
     'fries.glb', 'oregano.glb', '1.glb', '2.glb', '3.glb'
   ];
 
-  // Load models
   glbFiles.forEach((file, index) => {
     loader.load(file, (gltf) => {
       const model = gltf.scene;
       
-      // Randomize scale slightly
       const scale = 0.8 + Math.random() * 0.8;
       model.scale.set(scale, scale, scale);
       
-      // Position them in an elliptical ring around the center text
       const angle = (index / glbFiles.length) * Math.PI * 2;
       const radiusX = 7 + Math.random() * 3;
       const radiusY = 4 + Math.random() * 2;
@@ -503,7 +492,6 @@ h1,h2,h3,p{margin:0}
       model.position.y = Math.sin(angle) * radiusY;
       model.position.z = radiusZ;
 
-      // Add custom data for animations
       model.userData = {
         baseY: model.position.y,
         speed: 0.5 + Math.random() * 0.5,
@@ -515,14 +503,12 @@ h1,h2,h3,p{margin:0}
       scene.add(model);
       models.push(model);
       
-      // Fade in canvas once models are loading
       if (!canvas.classList.contains('loaded')) {
         canvas.classList.add('loaded');
       }
     });
   });
 
-  // Animation Loop
   const clock = new THREE.Clock();
 
   function animate() {
@@ -530,10 +516,8 @@ h1,h2,h3,p{margin:0}
     const time = clock.getElapsedTime();
 
     models.forEach(model => {
-      // Float up and down
       model.position.y = model.userData.baseY + Math.sin(time * model.userData.speed + model.userData.offset) * 0.5;
       
-      // Slow rotation
       model.rotation.x += model.userData.rotSpeedX;
       model.rotation.y += model.userData.rotSpeedY;
     });
@@ -541,10 +525,8 @@ h1,h2,h3,p{margin:0}
     renderer.render(scene, camera);
   }
   
-  // Start loop
   animate();
 
-  // Handle Resize
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -667,7 +649,8 @@ let sequenceStarted = false;
 for (let i = 0; i < COUNT; i++) {
   const img = new Image();
   img.decoding = "async";
-  img.src = BASE_PATH + "frame-" + String(i + 1).padStart(3, '0') + ".webp";
+  // ⚠️ CHANGED TO .png SINCE YOU UPDATED THE FILES
+  img.src = BASE_PATH + "frame-" + String(i + 1).padStart(3, '0') + ".png";
   
   img.onload = () => {
     imagesLoaded++;
