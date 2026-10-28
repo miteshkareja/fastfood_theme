@@ -479,6 +479,7 @@ h1,h2,h3,p{margin:0}
 <script type="module">
   import * as THREE from 'three';
   import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
   const canvas = document.getElementById('hero-canvas');
   const scene = new THREE.Scene();
@@ -492,17 +493,35 @@ h1,h2,h3,p{margin:0}
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NoToneMapping;
   renderer.toneMappingExposure = 1;
+  renderer.setClearColor(0x000000, 0);
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.72);
+  // Studio reflections are important for glTF/PBR materials. Without an
+  // environment map, saturated objects can render much darker than in a GLB viewer.
+  const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  const studioEnvironment = new RoomEnvironment();
+  const studioEnvMap = pmremGenerator.fromScene(studioEnvironment, 0.04).texture;
+  scene.environment = studioEnvMap;
+  studioEnvironment.dispose();
+  pmremGenerator.dispose();
+
+  // Neutral white lighting: improve visibility without tinting the tomato red/orange.
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x77716b, 1.35);
+  scene.add(hemiLight);
+
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
   scene.add(ambientLight);
-  
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1.15);
-  dirLight.position.set(5, 5, 5);
-  scene.add(dirLight);
 
-  const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.38);
-  dirLight2.position.set(-5, -5, 5);
-  scene.add(dirLight2);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+  keyLight.position.set(4, 6, 7);
+  scene.add(keyLight);
+
+  const fillLight = new THREE.DirectionalLight(0xffffff, 1.15);
+  fillLight.position.set(-5, 1, 5);
+  scene.add(fillLight);
+
+  const rimLight = new THREE.DirectionalLight(0xffffff, 1.5);
+  rimLight.position.set(1, 4, -5);
+  scene.add(rimLight);
 
   const loader = new GLTFLoader();
   const models = [];
