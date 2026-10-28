@@ -7,6 +7,16 @@
 <meta name="description" content="BURGUR — the burger that builds itself as you scroll.">
 <script>document.documentElement.classList.replace('no-js','js');</script>
 
+<!-- Three.js Import Map -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -14,7 +24,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box}
 :root{
-  --cream:#F3EDE2;
+  --cream:#F5EBE1; /* Updated to a slightly richer solid color */
   --ink:#12100F;
   --red:#D22630;
   --yellow:#F4B720;
@@ -25,7 +35,7 @@
 html,body{margin:0;padding:0}
 html{-webkit-text-size-adjust:100%;scroll-behavior:auto}
 body{
-  background:var(--cream); color:var(--ink);
+  background:var(--ink); color:var(--ink);
   font-family:'Inter',system-ui,-apple-system,sans-serif;
   font-size:16px; line-height:1.5; overflow-x:hidden; -webkit-font-smoothing:antialiased;
 }
@@ -61,8 +71,8 @@ h1,h2,h3,p{margin:0}
 /* TOPBAR */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:7000;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:calc(var(--pad)*.7) var(--pad);color:#fff;mix-blend-mode:difference;pointer-events:none;}
 .topbar > *{pointer-events:auto}
-.topbar__logo{font-family:'Anton',Impact,sans-serif;font-size:clamp(18px,2vw,26px);letter-spacing:.02em;line-height:1}
-.topbar__logo span{font-size:.55em;vertical-align:super;margin-left:2px}
+.topbar__logo{display:block;}
+.topbar__logo img{height:clamp(24px, 3vw, 36px); width:auto; object-fit:contain;}
 .topbar__status{display:none;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
 @media(min-width:860px){.topbar__status{display:flex}}
 .topbar__dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:pulse 2s infinite}
@@ -71,11 +81,39 @@ h1,h2,h3,p{margin:0}
 .topbar__link svg{width:13px;height:13px}
 
 /* HERO */
-.hero{min-height:100svh;background:var(--cream);display:flex;flex-direction:column;justify-content:space-between;padding:calc(var(--pad) + 64px) var(--pad) var(--pad);position:relative;overflow:hidden;}
+.hero{
+  min-height:100svh;
+  background: radial-gradient(circle at 50% 50%, #FFFFFF 0%, var(--cream) 100%);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:calc(var(--pad) + 64px) var(--pad) var(--pad);
+  position:relative;overflow:hidden;
+}
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+#hero-canvas.loaded {
+  opacity: 1;
+}
+.hero__ui {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  flex-grow: 1;
+}
 .hero__top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
 .hero__kicker{max-width:32ch;line-height:1.9}
 .hero__badge{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:var(--cream);padding:8px 14px;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
-.hero__title{font-size:clamp(4rem,23.5vw,23rem);text-align:center;white-space:nowrap;margin:clamp(10px,2vh,30px) 0;color:var(--ink);}
+.hero__title{font-size:clamp(4rem,23.5vw,23rem);text-align:center;white-space:nowrap;margin:clamp(10px,2vh,30px) 0;color:var(--ink); text-shadow: 0 10px 30px rgba(255,255,255,0.8);}
 .ch{display:inline-block;overflow:hidden;vertical-align:bottom;line-height:.84}
 .ch__in{display:inline-block;transform:translateY(115%);will-change:transform}
 .hero__foot{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:18px;}
@@ -95,7 +133,7 @@ h1,h2,h3,p{margin:0}
 @keyframes marq{to{transform:translateX(-50%)}}
 
 /* BUILD SECTION */
-.build{position:relative;height:500vh;background:var(--ink);} /* Increased height slightly */
+.build{position:relative;height:500vh;background:var(--ink);}
 .build__sticky{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--ink);}
 .build__canvas{width:100%;height:100%;display:block;object-fit:cover;will-change:transform;}
 .build__veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 26%,rgba(0,0,0,0) 52%,rgba(0,0,0,.78) 100%);}
@@ -132,13 +170,25 @@ h1,h2,h3,p{margin:0}
 .menu__title{font-size:clamp(2rem,5.2vw,4.4rem);margin-top:8px}
 .menu__title em{font-style:normal;color:var(--red)}
 .menu__track{display:flex;gap:clamp(14px,1.6vw,24px);padding:0 var(--pad);will-change:transform}
-.card{flex:0 0 clamp(240px,27vw,360px);height:min(58vh,470px);border-radius:18px;background:#fff;border:1px solid var(--line);padding:22px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s;}
+.card{flex:0 0 clamp(260px,28vw,380px);height:min(60vh,500px);border-radius:18px;background:#fff;border:1px solid var(--line);padding:22px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s;}
 .card:hover{transform:translateY(-6px);box-shadow:0 24px 50px -24px rgba(18,16,15,.4)}
-.card__top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card__top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;position:relative;z-index:2;}
 .card__num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:rgba(18,16,15,.4)}
 .card__price{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;background:var(--ink);color:var(--cream);padding:5px 10px;border-radius:999px}
-.card__disc{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:min(72%,240px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),transparent 55%),var(--c,var(--red));transition:transform .6s cubic-bezier(.2,.8,.2,1);}
-.card:hover .card__disc{transform:translate(-50%,-50%) scale(1.07) rotate(8deg)}
+
+/* Menu Image */
+.card__media{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:90%; height:60%; display:flex; justify-content:center; align-items:center;
+  pointer-events:none; z-index:1;
+}
+.card__media img{
+  max-width:100%; max-height:100%; object-fit:contain; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
+  transition: transform .6s cubic-bezier(.2,.8,.2,1);
+}
+.card:hover .card__media img{ transform: scale(1.07) rotate(4deg); }
+
+.card__bottom{position:relative;z-index:2; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px); padding: 10px; border-radius: 8px; margin: 0 -10px -10px -10px;}
 .card__name{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.4rem,2.4vw,2.2rem);text-transform:uppercase;line-height:.9}
 .card__desc{font-size:13px;color:rgba(18,16,15,.6);margin-top:8px;line-height:1.45}
 .card--end{display:grid;place-items:center;text-align:center;background:var(--ink);color:var(--cream);border-color:transparent;}
@@ -206,12 +256,15 @@ h1,h2,h3,p{margin:0}
     <p class="loader__k kicker">BURGUR · Build Process</p>
     <p class="loader__pct" data-loader-pct>0%</p>
     <div class="loader__bar"><i data-loader-bar></i></div>
-    <p class="loader__msg" data-loader-msg>Loading frames...</p>
+    <p class="loader__msg" data-loader-msg>Loading...</p>
   </div>
 </div>
 
 <header class="topbar">
-  <a class="topbar__logo" href="#top" data-magnetic>BURGUR<span>®</span></a>
+  <!-- Changed to logo.png -->
+  <a class="topbar__logo" href="#top" data-magnetic>
+    <img src="logo.png" alt="BURGUR" onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\'font-family:Anton; font-size:24px;\'>BURGUR®</span>';">
+  </a>
   <p class="topbar__status">
     <span class="topbar__dot" aria-hidden="true"></span>
     <span>Open 7/7 · 11:30 AM → 10:30 PM</span>
@@ -224,14 +277,20 @@ h1,h2,h3,p{margin:0}
 
 <main id="top">
   <section class="hero">
-    <div class="hero__top">
-      <p class="kicker hero__kicker">Brioche Bun · Smashed Beef<br>Melted Cheddar · House Sauce</p>
-      <span class="hero__badge" data-reveal>Handmade · 100% Beef</span>
-    </div>
-    <h1 class="hero__title display" data-hero-title>BURGUR</h1>
-    <div class="hero__foot">
-      <p class="hero__tag" data-reveal>A burger isn't told. It's built—ingredient by ingredient, right before your eyes.</p>
-      <a class="hero__scroll" href="#build">Scroll to build <i aria-hidden="true"></i></a>
+    <!-- Three.js Canvas for 3D Models -->
+    <canvas id="hero-canvas"></canvas>
+
+    <!-- Hero Content -->
+    <div class="hero__ui">
+      <div class="hero__top">
+        <p class="kicker hero__kicker">Brioche Bun · Crispy Chicken<br>Melted Cheddar · House Sauce</p>
+        <span class="hero__badge" data-reveal>Handmade · Fresh Ingredients</span>
+      </div>
+      <h1 class="hero__title display" data-hero-title>BURGUR</h1>
+      <div class="hero__foot">
+        <p class="hero__tag" data-reveal>A burger isn't told. It's built—ingredient by ingredient, right before your eyes.</p>
+        <a class="hero__scroll" href="#build">Scroll to build <i aria-hidden="true"></i></a>
+      </div>
     </div>
   </section>
 
@@ -261,7 +320,6 @@ h1,h2,h3,p{margin:0}
   <section class="build" id="build">
     <div class="build__sticky">
       
-      <!-- CANVAS FOR IMAGE SEQUENCE -->
       <canvas id="build-canvas" class="build__canvas"></canvas>
 
       <div class="build__veil" aria-hidden="true"></div>
@@ -278,7 +336,7 @@ h1,h2,h3,p{margin:0}
           <li class="bstep" data-step><span class="bstep__num">01 / 06</span><h3 class="bstep__name">The Bun</h3><p class="bstep__desc">Toasted brioche. The foundation of everything.</p></li>
           <li class="bstep" data-step><span class="bstep__num">02 / 06</span><h3 class="bstep__name">The Sauce</h3><p class="bstep__desc">Secret recipe. A little smoky, a little spicy.</p></li>
           <li class="bstep" data-step><span class="bstep__num">03 / 06</span><h3 class="bstep__name">The Lettuce</h3><p class="bstep__desc">Crisp and cold. It holds the wall.</p></li>
-          <li class="bstep" data-step><span class="bstep__num">04 / 06</span><h3 class="bstep__name">The Patty</h3><p class="bstep__desc">Smashed on the griddle. Two minutes per side.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">04 / 06</span><h3 class="bstep__name">The Patty</h3><p class="bstep__desc">Crispy chicken. Marinated and cooked to perfection.</p></li>
           <li class="bstep" data-step><span class="bstep__num">05 / 06</span><h3 class="bstep__name">The Cheese</h3><p class="bstep__desc">Melted. Oozing. It has to overflow. Always.</p></li>
           <li class="bstep" data-step><span class="bstep__num">06 / 06</span><h3 class="bstep__name">The Top Bun</h3><p class="bstep__desc">Close it up. It's ready. Let's eat!</p></li>
         </ol>
@@ -309,12 +367,43 @@ h1,h2,h3,p{margin:0}
     </div>
 
     <div class="menu__track" data-menu-track>
-      <article class="card"><div class="card__top"><span class="card__num">01</span><span class="card__price">$12.00</span></div><div class="card__disc" style="--c:#D22630" aria-hidden="true"></div><div><h3 class="card__name">The Classic</h3><p class="card__desc">Smashed beef, cheddar, lettuce, tomato, house sauce.</p></div></article>
-      <article class="card"><div class="card__top"><span class="card__num">02</span><span class="card__price">$15.00</span></div><div class="card__disc" style="--c:#F4B720" aria-hidden="true"></div><div><h3 class="card__name">The Double</h3><p class="card__desc">Two patties, double cheddar, caramelized onions.</p></div></article>
-      <article class="card"><div class="card__top"><span class="card__num">03</span><span class="card__price">$14.00</span></div><div class="card__disc" style="--c:#3F6B45" aria-hidden="true"></div><div><h3 class="card__name">The Veggie</h3><p class="card__desc">Chickpea patty, avocado, pickles, lemon yogurt.</p></div></article>
-      <article class="card"><div class="card__top"><span class="card__num">04</span><span class="card__price">$13.00</span></div><div class="card__disc" style="--c:#E07A3F" aria-hidden="true"></div><div><h3 class="card__name">The Chicken</h3><p class="card__desc">Crispy chicken, white cabbage, honey-mustard sauce.</p></div></article>
-      <article class="card"><div class="card__top"><span class="card__num">05</span><span class="card__price">$15.00</span></div><div class="card__disc" style="--c:#8E4B2E" aria-hidden="true"></div><div><h3 class="card__name">The Bacon</h3><p class="card__desc">Smoked bacon, cheddar, crispy onions, BBQ sauce.</p></div></article>
-      <article class="card"><div class="card__top"><span class="card__num">06</span><span class="card__price">$18.00</span></div><div class="card__disc" style="--c:#B21236" aria-hidden="true"></div><div><h3 class="card__name">The Chef</h3><p class="card__desc">Whatever the chef found this morning. Trust us.</p></div></article>
+      <!-- Added menu images -->
+      <article class="card">
+        <div class="card__top"><span class="card__num">01</span><span class="card__price">$12.00</span></div>
+        <div class="card__media"><img src="menu1.png" alt="The Classic" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Classic</h3><p class="card__desc">Crispy chicken, cheddar, lettuce, tomato, house sauce.</p></div>
+      </article>
+
+      <article class="card">
+        <div class="card__top"><span class="card__num">02</span><span class="card__price">$15.00</span></div>
+        <div class="card__media"><img src="menu2.png" alt="The Double" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Double</h3><p class="card__desc">Two patties, double cheddar, caramelized onions.</p></div>
+      </article>
+
+      <article class="card">
+        <div class="card__top"><span class="card__num">03</span><span class="card__price">$14.00</span></div>
+        <div class="card__media"><img src="menu3.png" alt="The Veggie" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Veggie</h3><p class="card__desc">Chickpea patty, avocado, pickles, lemon yogurt.</p></div>
+      </article>
+
+      <article class="card">
+        <div class="card__top"><span class="card__num">04</span><span class="card__price">$13.00</span></div>
+        <div class="card__media"><img src="menu4.png" alt="The Chicken" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Chicken</h3><p class="card__desc">Crispy chicken, white cabbage, honey-mustard sauce.</p></div>
+      </article>
+
+      <article class="card">
+        <div class="card__top"><span class="card__num">05</span><span class="card__price">$15.00</span></div>
+        <div class="card__media"><img src="menu5.png" alt="The Bacon" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Bacon</h3><p class="card__desc">Smoked bacon, cheddar, crispy onions, BBQ sauce.</p></div>
+      </article>
+
+      <article class="card">
+        <div class="card__top"><span class="card__num">06</span><span class="card__price">$18.00</span></div>
+        <div class="card__media"><img src="menu6.png" alt="The Chef" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Chef</h3><p class="card__desc">Whatever the chef found this morning. Trust us.</p></div>
+      </article>
+
       <div class="card card--end"><div><p>Come taste!</p><span>We are waiting.</span></div></div>
     </div>
   </section>
@@ -356,6 +445,114 @@ h1,h2,h3,p{margin:0}
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
 
+<!-- Three.js Module Script for Floating Objects -->
+<script type="module">
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+  const canvas = document.getElementById('hero-canvas');
+  const scene = new THREE.Scene();
+  
+  // Setup Camera
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.z = 12;
+
+  // Setup Renderer
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+  scene.add(ambientLight);
+  
+  const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
+  dirLight.position.set(5, 5, 5);
+  scene.add(dirLight);
+
+  const dirLight2 = new THREE.DirectionalLight(0xffffee, 1);
+  dirLight2.position.set(-5, -5, 5);
+  scene.add(dirLight2);
+
+  const loader = new GLTFLoader();
+  const models = [];
+  
+  // List of your GLB files
+  const glbFiles = [
+    'tomato.glb', 'cucumber.glb', 'chicken.glb', 
+    'fries.glb', 'oregano.glb', '1.glb', '2.glb', '3.glb'
+  ];
+
+  // Load models
+  glbFiles.forEach((file, index) => {
+    loader.load(file, (gltf) => {
+      const model = gltf.scene;
+      
+      // Randomize scale slightly
+      const scale = 0.8 + Math.random() * 0.8;
+      model.scale.set(scale, scale, scale);
+      
+      // Position them in an elliptical ring around the center text
+      const angle = (index / glbFiles.length) * Math.PI * 2;
+      const radiusX = 7 + Math.random() * 3;
+      const radiusY = 4 + Math.random() * 2;
+      const radiusZ = -2 + Math.random() * 4;
+      
+      model.position.x = Math.cos(angle) * radiusX;
+      model.position.y = Math.sin(angle) * radiusY;
+      model.position.z = radiusZ;
+
+      // Add custom data for animations
+      model.userData = {
+        baseY: model.position.y,
+        speed: 0.5 + Math.random() * 0.5,
+        offset: Math.random() * Math.PI * 2,
+        rotSpeedX: (Math.random() - 0.5) * 0.02,
+        rotSpeedY: (Math.random() - 0.5) * 0.02,
+      };
+
+      scene.add(model);
+      models.push(model);
+      
+      // Fade in canvas once models are loading
+      if (!canvas.classList.contains('loaded')) {
+        canvas.classList.add('loaded');
+      }
+    });
+  });
+
+  // Animation Loop
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const time = clock.getElapsedTime();
+
+    models.forEach(model => {
+      // Float up and down
+      model.position.y = model.userData.baseY + Math.sin(time * model.userData.speed + model.userData.offset) * 0.5;
+      
+      // Slow rotation
+      model.rotation.x += model.userData.rotSpeedX;
+      model.rotation.y += model.userData.rotSpeedY;
+    });
+
+    renderer.render(scene, camera);
+  }
+  
+  // Start loop
+  animate();
+
+  // Handle Resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
+<!-- Main Scroll Logic -->
 <script>
 const q  = (s, c = document) => c.querySelector(s);
 const qa = (s, c = document) => Array.from(c.querySelectorAll(s));
@@ -419,7 +616,6 @@ let loaderClosed = false;
 
 const msgs = ['Heating the grill...', 'Slicing the bun...', 'Cheddar is melting...', 'Almost ready. Let\'s go.'];
 
-// Fake progress bar animation
 gsap.to(pct, {
   v: 92, duration: 1.5, ease: 'power1.out',
   onUpdate() {
@@ -462,15 +658,12 @@ function closeLoader() {
 const canvas = document.getElementById('build-canvas');
 const ctx = canvas.getContext('2d');
 const COUNT = 180;
-
-// Changed path to relative because you are hosting on GitHub Pages
 const BASE_PATH = "frame/"; 
 
 const frames = new Array(COUNT);
 let imagesLoaded = 0;
 let sequenceStarted = false;
 
-// Preload images
 for (let i = 0; i < COUNT; i++) {
   const img = new Image();
   img.decoding = "async";
@@ -478,7 +671,6 @@ for (let i = 0; i < COUNT; i++) {
   
   img.onload = () => {
     imagesLoaded++;
-    // Start the sequence and hide loader once the first 15 frames are ready
     if (imagesLoaded >= 15 && !sequenceStarted) {
       sequenceStarted = true;
       drawFrame(0);
@@ -489,7 +681,6 @@ for (let i = 0; i < COUNT; i++) {
   frames[i] = img;
 }
 
-// Canvas Resizing
 function sizeCanvas() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = canvas.clientWidth * dpr;
@@ -498,7 +689,6 @@ function sizeCanvas() {
 sizeCanvas();
 window.addEventListener("resize", sizeCanvas);
 
-// Draw Frame (Object-fit: cover logic)
 function drawFrame(index) {
   const img = frames[index];
   if (!img || !img.complete || !img.naturalWidth) return;
@@ -519,21 +709,18 @@ function drawFrame(index) {
   ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
 }
 
-// Variables for Scrolling
 let targetFrame = 0;
 let currentFrame = 0;
 let isBuildActive = false;
 
-// GSAP ScrollTrigger for Frame Mapping
 ScrollTrigger.create({
   trigger: '.build',
   start: 'top top',
   end: 'bottom bottom',
   onUpdate(self) {
     const p = self.progress;
-    targetFrame = p * (COUNT - 1); // Map 0-1 to 0-179
+    targetFrame = p * (COUNT - 1);
 
-    // Update UI
     if (q('[data-build-bar]')) q('[data-build-bar]').style.transform = 'scaleX(' + p + ')';
     const idx = clamp(Math.floor(p * 6 + 0.0001), 0, 5);
     setStep(idx);
@@ -544,10 +731,8 @@ ScrollTrigger.create({
   }
 });
 
-// Render Loop (Lerp for smoothness)
 function renderLoop() {
   if (isBuildActive) {
-    // 0.28 creates the momentum/smooth easing effect
     currentFrame += (targetFrame - currentFrame) * 0.28;
     if (Math.abs(targetFrame - currentFrame) < 0.01) currentFrame = targetFrame;
     drawFrame(Math.round(currentFrame));
@@ -555,7 +740,6 @@ function renderLoop() {
   requestAnimationFrame(renderLoop);
 }
 
-// Fallback if load takes too long
 setTimeout(closeLoader, 8000);
 
 // 5. UI TEXT UPDATES
