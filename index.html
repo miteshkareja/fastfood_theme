@@ -253,14 +253,20 @@ h1,h2,h3,p{margin:0}
   .grain{animation:none}
 }
 
-/* ORIGINAL ART DIRECTION — deep violet / citrus, not competitor red */
-:root{--ink:#17152B;--cream:#F5F1E8;--red:#5B46E8;--yellow:#D7F36A;}
-.hero{background:#D7F36A;}
-.hero-ribbon{width:min(110vw,1450px);top:51%;opacity:.9;mix-blend-mode:normal;filter:drop-shadow(0 7px 0 rgba(23,21,43,.08));}
-.hero-ribbon text{fill:#5B46E8;font-size:34px;letter-spacing:7px;}
-.hero-ribbon svg{overflow:visible;}
-.build__canvas{image-rendering:auto;}
+/* ORIGINAL ART DIRECTION — warm premium palette, distinct from the reference */
+:root{--ink:#211B2D;--cream:#F3EBDD;--red:#E45B43;--yellow:#E8B85B;--green:#536B55;}
+.hero{background:radial-gradient(ellipse at 50% 42%, #FFF9EF 0%, #F3EBDD 62%, #E8DCCB 100%);}
+/* Keep the 3D objects above the large title so every loaded model remains visible. */
+#hero-canvas{z-index:4;opacity:1;pointer-events:none;}
+.hero__ui{z-index:2;}
+.hero__title{z-index:3;}
+.hero-ribbon{z-index:5;width:min(112vw,1480px);top:51%;left:50%;opacity:1;mix-blend-mode:normal;filter:drop-shadow(0 5px 0 rgba(33,27,45,.08));transform:translate(-50%,-50%) rotate(-5deg);animation:ribbon-float 7s ease-in-out infinite alternate;}
+.hero-ribbon svg{display:block;width:100%;height:auto;overflow:visible;}
+.hero-ribbon text{font-family:'Anton',Impact,sans-serif;fill:#E45B43;font-size:34px;letter-spacing:7px;}
+.hero-ribbon textPath{animation:none;}
+@keyframes ribbon-float{from{transform:translate(-50%,-48%) rotate(-5deg)}to{transform:translate(-50%,-53%) rotate(2deg)}}
 @media(max-width:640px){.hero-ribbon{width:150vw;top:50%;}.hero-ribbon text{font-size:29px;letter-spacing:4px;}}
+@media(prefers-reduced-motion:reduce){.hero-ribbon{animation:none;}}
 
 </style>
 </head>
@@ -301,9 +307,9 @@ h1,h2,h3,p{margin:0}
     <canvas id="hero-canvas"></canvas>
 
     <div class="hero-ribbon" aria-hidden="true">
-      <svg viewBox="0 0 1200 220" role="presentation">
-        <defs><path id="hero-ribbon-curve" d="M-40,135 C180,-5 370,265 600,120 S1010,5 1240,125" /></defs>
-        <text><textPath href="#hero-ribbon-curve" startOffset="0%">FRESHLY BUILT ✳ BIG FLAVOUR ✳ NO SHORTCUTS ✳ FRESHLY BUILT ✳ BIG FLAVOUR ✳ NO SHORTCUTS ✳ <animate attributeName="startOffset" from="0%" to="-100%" dur="24s" repeatCount="indefinite" /></textPath></text>
+      <svg viewBox="0 0 1200 220" role="presentation" focusable="false">
+        <defs><path id="hero-ribbon-curve" d="M-80,132 C160,0 365,250 600,120 S1010,8 1280,125" /></defs>
+        <text><textPath href="#hero-ribbon-curve" startOffset="0%">FRESHLY BUILT ✳ BIG FLAVOUR ✳ NO SHORTCUTS ✳ FRESHLY BUILT ✳ BIG FLAVOUR ✳ NO SHORTCUTS ✳ FRESHLY BUILT ✳ BIG FLAVOUR ✳ NO SHORTCUTS ✳ <animate attributeName="startOffset" from="0%" to="-100%" dur="22s" repeatCount="indefinite" /></textPath></text>
       </svg>
     </div>
     <div class="hero__ui">
@@ -484,15 +490,17 @@ h1,h2,h3,p{margin:0}
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
+  renderer.toneMappingExposure = 1;
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.72);
   scene.add(ambientLight);
   
-  const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.15);
   dirLight.position.set(5, 5, 5);
   scene.add(dirLight);
 
-  const dirLight2 = new THREE.DirectionalLight(0xffffee, 1);
+  const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.38);
   dirLight2.position.set(-5, -5, 5);
   scene.add(dirLight2);
 
@@ -513,17 +521,32 @@ h1,h2,h3,p{margin:0}
     loader.load(file, (gltf) => {
       const model = gltf.scene;
       
-      const scale = 0.8 + Math.random() * 0.8;
-      model.scale.set(scale, scale, scale);
-      
-      const angle = (index / glbFiles.length) * Math.PI * 2;
-      const radiusX = 3.1 + Math.random() * 3.0;
-      const radiusY = 1.8 + Math.random() * 2.3;
-      const radiusZ = -1.5 + Math.random() * 2.8;
-      
-      model.position.x = Math.cos(angle) * radiusX;
-      model.position.y = Math.sin(angle) * radiusY;
-      model.position.z = radiusZ;
+      // Preserve the original GLB materials and colors; normalize only object size.
+      model.updateMatrixWorld(true);
+      const bounds = new THREE.Box3().setFromObject(model);
+      const size = new THREE.Vector3();
+      bounds.getSize(size);
+      const maxDim = Math.max(size.x, size.y, size.z) || 1;
+      const targetSize = [1.35, 1.2, 1.45, 1.25, 1.0, 1.15, 1.15, 1.15][index] || 1.2;
+      const scale = targetSize / maxDim;
+      model.scale.setScalar(scale);
+      model.updateMatrixWorld(true);
+      const centeredBounds = new THREE.Box3().setFromObject(model);
+      const center = new THREE.Vector3();
+      centeredBounds.getCenter(center);
+      model.position.sub(center);
+
+      // Arrange the ingredients inside the camera's visible hero area, not far behind the title.
+      const spots = [
+        [-4.1,  1.25, 2.2], [ 4.0,  1.05, 2.0],
+        [-3.5, -1.35, 2.6], [ 3.6, -1.45, 2.4],
+        [-5.0,  0.05, 1.8], [ 5.0,  0.05, 1.9],
+        [-1.8,  1.85, 2.1], [ 1.8, -1.85, 2.3]
+      ];
+      const spot = spots[index] || [0, 0, 2];
+      model.position.x += spot[0];
+      model.position.y += spot[1];
+      model.position.z = spot[2];
 
       model.userData = {
         baseY: model.position.y,
@@ -565,9 +588,9 @@ h1,h2,h3,p{margin:0}
         const dx = projected.x - pointer.x;
         const dy = projected.y - pointer.y;
         const d = Math.sqrt(dx * dx + dy * dy);
-        const reach = 0.42;
+        const reach = 0.55;
         if (d < reach && d > 0.001) {
-          const force = Math.pow((reach - d) / reach, 2) * 1.5;
+          const force = Math.pow((reach - d) / reach, 2) * 1.9;
           pushX = (dx / d) * force;
           pushY = (dy / d) * force;
         }
@@ -810,7 +833,7 @@ setTimeout(() => {
 // CINEMATIC SCROLL DEPTH: subtle parallax on hero typography and background.
 if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
   gsap.to('.hero__title', { yPercent: 24, scale: 0.88, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.8 } });
-  gsap.to('.hero-ribbon', { rotation: 9, scale: 1.08, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 } });
+  // Ribbon positioning/motion is handled by its own CSS keyframes; avoid GSAP transform conflicts.
   gsap.utils.toArray('.visit__title, .menu__title').forEach((el) => gsap.from(el, { y: 38, opacity: 0, duration: 0.85, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 86%' } }));
 }
 
