@@ -2,12 +2,12 @@
 <html lang="en" class="no-js">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>BURGUR® — Built Different</title>
-<meta name="description" content="BURGUR — an interactive 3D burger experience. Scroll, build, and taste.">
-<meta name="theme-color" content="#F3EBDD">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BURGUR — The Scroll Build</title>
+<meta name="description" content="BURGUR — the burger that builds itself as you scroll.">
 <script>document.documentElement.classList.replace('no-js','js');</script>
 
+<!-- Three.js Import Map -->
 <script type="importmap">
 {
   "imports": {
@@ -19,858 +19,941 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
 *,*::before,*::after{box-sizing:border-box}
 :root{
-  --ink:#211B2D;
-  --cream:#F3EBDD;
-  --paper:#FFF9EF;
-  --red:#E45B43;
-  --red-dark:#BF4434;
-  --yellow:#E8B85B;
-  --green:#536B55;
-  --line:rgba(33,27,45,.14);
-  --muted:rgba(33,27,45,.58);
-  --pad:clamp(18px,4vw,64px);
-  --radius:clamp(18px,2vw,28px);
-  --ease:cubic-bezier(.2,.8,.2,1);
-  --hero:radial-gradient(ellipse at 50% 38%,#FFFDF7 0%,#F6EEE2 50%,#E9DCCB 100%);
+  --cream:#F5EBE1;
+  --ink:#12100F;
+  --red:#D22630;
+  --yellow:#F4B720;
+  --green:#3F6B45;
+  --line:rgba(18,16,15,.14);
+  --pad:clamp(16px,4vw,56px);
 }
-*,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:auto;-webkit-text-size-adjust:100%}
 html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:auto}
 body{
-  margin:0;
-  overflow-x:hidden;
-  background:var(--ink);
-  color:var(--ink);
-  font:16px/1.5 Inter,system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased;
+  background:var(--ink); color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  font-size:16px; line-height:1.5; overflow-x:hidden; -webkit-font-smoothing:antialiased;
 }
-body.is-loading{height:100svh;overflow:hidden}
-button,a{-webkit-tap-highlight-color:transparent}
+body.is-loading{overflow:hidden;height:100vh}
+img,video,canvas{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
-img,canvas,svg{display:block;max-width:100%}
+ol,ul{margin:0;padding:0;list-style:none}
 h1,h2,h3,p{margin:0}
-ul,ol{margin:0;padding:0;list-style:none}
-::selection{background:var(--red);color:#fff}
-:focus-visible{outline:3px solid var(--yellow);outline-offset:5px}
+::selection{background:var(--red);color:var(--cream)}
 
-.display{
-  font-family:Anton,Impact,sans-serif;
-  font-weight:400;
-  text-transform:uppercase;
-  line-height:.84;
-  letter-spacing:-.025em;
-}
-.kicker{
-  font:500 clamp(10px,.85vw,12px)/1.5 "JetBrains Mono",monospace;
-  letter-spacing:.17em;
-  text-transform:uppercase;
-}
-.mono{font-family:"JetBrains Mono",monospace}
+.kicker{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:clamp(10px,.9vw,12px);text-transform:uppercase;letter-spacing:.18em;font-weight:500;}
+.display{font-family:'Anton',Impact,sans-serif;text-transform:uppercase;line-height:.84;letter-spacing:-.015em;font-weight:400}
 
-/* Ambient texture */
-.noise{
-  position:fixed;
-  inset:-60%;
-  z-index:9000;
-  pointer-events:none;
-  opacity:.035;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation:grain 8s steps(5) infinite;
-}
-@keyframes grain{
-  20%{transform:translate(-3%,2%)}
-  40%{transform:translate(2%,-3%)}
-  60%{transform:translate(-2%,-2%)}
-  80%{transform:translate(3%,1%)}
-}
+/* GRAIN + CURSOR */
+.grain{position:fixed;inset:-50%;z-index:8000;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 8s steps(6) infinite;}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-2%)}80%{transform:translate(3%,1%)}100%{transform:translate(0,0)}}
+.cursor{position:fixed;left:0;top:0;z-index:9500;pointer-events:none;opacity:0;mix-blend-mode:difference}
+.cursor__dot{position:absolute;left:0;top:0;width:8px;height:8px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);transition:opacity .25s}
+.cursor__label{position:absolute;left:0;top:0;transform:translate(-50%,-50%) scale(.2);background:#fff;color:#000;padding:9px 14px;border-radius:999px;white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;transition:transform .35s cubic-bezier(.2,.9,.2,1);}
+.cursor.is-label .cursor__label{transform:translate(-50%,-50%) scale(1)}
+.cursor.is-label .cursor__dot{opacity:0}
+@media (hover:none){.cursor{display:none!important}}
 
-/* Loader */
-.loader{
-  position:fixed;
-  inset:0;
-  z-index:10000;
-  display:grid;
-  place-items:center;
-  background:var(--ink);
-  color:var(--cream);
-}
-.loader__inner{width:min(520px,82vw);text-align:center}
-.loader__brand{
-  font-family:Anton,sans-serif;
-  font-size:clamp(70px,16vw,160px);
-  line-height:.8;
-  letter-spacing:-.03em;
-}
-.loader__brand span{color:var(--red)}
-.loader__row{
-  display:flex;
-  justify-content:space-between;
-  margin-top:28px;
-  color:rgba(243,235,221,.65);
-  font:11px "JetBrains Mono",monospace;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-}
-.loader__track{height:2px;margin-top:12px;background:#ffffff24;overflow:hidden}
-.loader__track i{display:block;height:100%;background:var(--yellow);transform:scaleX(0);transform-origin:left}
+/* LOADER */
+.loader{position:fixed;inset:0;z-index:9000;background:var(--ink);color:var(--cream);display:grid;place-items:center;will-change:transform;}
+.loader__inner{width:min(560px,84vw);text-align:center}
+.loader__k{color:rgba(243,237,226,.5);margin-bottom:18px}
+.loader__pct{font-family:'Anton',Impact,sans-serif;font-size:clamp(64px,15vw,170px);line-height:.85}
+.loader__bar{height:2px;background:rgba(243,237,226,.18);margin-top:26px;overflow:hidden}
+.loader__bar i{display:block;height:100%;background:var(--yellow);transform:scaleX(0);transform-origin:left}
+.loader__msg{margin-top:18px;font-size:13px;color:rgba(243,237,226,.55);font-family:'JetBrains Mono',monospace}
 
-/* Header */
-.header{
-  position:fixed;
-  inset:0 0 auto;
-  z-index:6000;
-  padding:16px var(--pad);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  pointer-events:none;
-  transition:transform .4s;
-}
-.header__inner{
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-}
-.header__logo,.header__cta{pointer-events:auto}
-.header__logo{
-  color:#fff;
-  mix-blend-mode:difference;
-  font:clamp(23px,2.4vw,34px)/1 Anton,sans-serif;
-  letter-spacing:-.02em;
-}
-.header__nav{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:6px;
-  border:1px solid rgba(255,255,255,.22);
-  border-radius:999px;
-  background:rgba(20,17,27,.16);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  pointer-events:auto;
-}
-.header__nav a{
-  padding:8px 15px;
-  border-radius:999px;
-  color:#fff;
-  font:500 10px/1 "JetBrains Mono",monospace;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  transition:.3s;
-}
-.header__nav a:hover{background:#fff;color:#111}
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:7000;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:calc(var(--pad)*.7) var(--pad);color:#fff;mix-blend-mode:difference;pointer-events:none;}
+.topbar > *{pointer-events:auto}
+.topbar__logo{display:block;}
+.topbar__logo img{height:clamp(24px, 3vw, 36px); width:auto; object-fit:contain;}
+.topbar__status{display:none;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+@media(min-width:860px){.topbar__status{display:flex}}
+.topbar__dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+.topbar__link{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:9px 16px}
+.topbar__link svg{width:13px;height:13px}
 
-/* Hero */
+/* HERO */
 .hero{
-  position:relative;
   min-height:100svh;
-  display:flex;
-  overflow:hidden;
-  isolation:isolate;
-  background:var(--hero);
-  padding:clamp(104px,13vh,150px) var(--pad) clamp(22px,4vh,48px);
+  background: radial-gradient(circle at 50% 50%, #FFFFFF 0%, var(--cream) 100%);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:calc(var(--pad) + 64px) var(--pad) var(--pad);
+  position:relative;overflow:hidden;
 }
-.hero::before{
-  content:"";
-  position:absolute;
-  width:min(76vw,1000px);
-  aspect-ratio:1;
-  left:50%;top:48%;
-  transform:translate(-50%,-50%);
-  border:1px solid rgba(33,27,45,.07);
-  border-radius:50%;
-  box-shadow:0 0 0 70px rgba(255,255,255,.08),0 0 0 140px rgba(255,255,255,.045);
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.5s ease;
 }
-#hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none}
-.hero__content{position:relative;z-index:2;width:100%;display:flex;flex-direction:column;justify-content:space-between;flex:1}
-.hero__meta{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
-.hero__eyebrow{max-width:32ch;color:rgba(33,27,45,.65)}
-.hero__pill{
-  display:inline-flex;
-  align-items:center;
-  gap:9px;
-  padding:9px 14px;
-  border-radius:999px;
-  background:rgba(255,255,255,.6);
-  border:1px solid rgba(33,27,45,.1);
-  box-shadow:0 8px 24px rgba(33,27,45,.06);
-  backdrop-filter:blur(12px);
-  font:500 10px/1 "JetBrains Mono",monospace;
-  letter-spacing:.12em;
-  text-transform:uppercase;
+#hero-canvas.loaded {
+  opacity: 1;
 }
-.hero__pill-dot{width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(228,91,67,.12)}
-.hero__title-wrap{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
-.hero__title{
-  position:relative;
-  z-index:2;
-  font-size:clamp(4.2rem,23.2vw,23rem);
-  white-space:nowrap;
-  color:var(--ink);
-  text-shadow:0 3px 0 rgba(255,255,255,.65);
+.hero__ui {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  flex-grow: 1;
 }
-.hero__title .char{display:inline-block;transform:translateY(110%)}
-.hero__title .char-mask{display:inline-block;overflow:hidden;line-height:.86}
-.hero__footer{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;border-top:1px solid var(--line);padding-top:18px}
-.hero__copy{max-width:39ch;font-size:clamp(14px,1.25vw,18px);font-weight:500}
-.hero__scroll{display:flex;align-items:center;gap:12px;font:500 11px "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.14em}
-.hero__scroll-circle{width:42px;height:42px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;animation:bob 1.8s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(5px)}}
+.hero__top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.hero__kicker{max-width:32ch;line-height:1.9}
+.hero__badge{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:var(--cream);padding:8px 14px;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+.hero__title{font-size:clamp(4rem,23.5vw,23rem);text-align:center;white-space:nowrap;margin:clamp(10px,2vh,30px) 0;color:var(--ink); text-shadow: 0 10px 30px rgba(255,255,255,0.8);}
+.ch{display:inline-block;overflow:hidden;vertical-align:bottom;line-height:.84}
+.ch__in{display:inline-block;transform:translateY(115%);will-change:transform}
+.hero__foot{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:18px;}
+.hero__tag{max-width:34ch;font-size:clamp(14px,1.3vw,18px);line-height:1.5;font-weight:500}
+.hero__scroll{display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+.hero__scroll i{display:block;width:34px;height:1px;background:currentColor;position:relative;overflow:hidden}
+.hero__scroll i::after{content:"";position:absolute;inset:0;background:var(--red);animation:slide 1.6s cubic-bezier(.7,0,.3,1) infinite}
+@keyframes slide{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
 
-/* Hero object captions */
-.hero-note{
-  position:absolute;
-  z-index:5;
-  pointer-events:none;
-  padding:8px 12px;
-  border:1px solid rgba(33,27,45,.12);
-  border-radius:999px;
-  background:rgba(255,253,247,.65);
-  backdrop-filter:blur(8px);
-  color:rgba(33,27,45,.65);
-  font:500 9px/1 "JetBrains Mono",monospace;
-  letter-spacing:.13em;
-  text-transform:uppercase;
-  box-shadow:0 8px 20px rgba(33,27,45,.04);
-}
-.hero-note--one{left:8%;top:28%}
-.hero-note--two{right:7%;bottom:25%}
-@media(max-width:700px){
-  .hero__eyebrow{display:none}
-  .hero-note--one{display:none}
-  .hero__footer{align-items:flex-end}
-  .hero__copy{max-width:25ch}
-}
+/* CINEMATIC CURVED TYPE RIBBON */
+.hero-ribbon{position:absolute;z-index:2;left:50%;top:48%;width:min(94vw,1120px);height:auto;transform:translate(-50%,-50%) rotate(-5deg);pointer-events:none;opacity:.78;mix-blend-mode:multiply;}
+.hero-ribbon svg{display:block;width:100%;overflow:visible;}
+.hero-ribbon text{font-family:'Anton',Impact,sans-serif;font-size:31px;letter-spacing:5px;fill:var(--red);}
+.hero-ribbon textPath{animation:none;}
+.hero-ribbon{animation:ribbon-drift 8s ease-in-out infinite alternate;}
+@keyframes ribbon-drift{from{translate:-50% -48%;}to{translate:-50% -53%;}}
+.hero__title{position:relative;z-index:3;}
+#hero-canvas{z-index:1;}
+@media(max-width:640px){.hero-ribbon{width:125vw;top:49%;opacity:.62}.hero-ribbon text{font-size:27px;letter-spacing:3px}}
+@media(prefers-reduced-motion:reduce){.hero-ribbon,.hero-ribbon textPath{animation:none}}
 
-/* Ticker */
-.marquee{background:var(--red);color:#fff8ed;border-block:1px solid rgba(0,0,0,.08);overflow:hidden;padding:14px 0}
-.marquee__track{display:flex;width:max-content;animation:marquee 24s linear infinite}
-.marquee__set{display:flex;align-items:center;gap:30px;padding-right:30px}
-.marquee__item{font:clamp(24px,3.5vw,50px)/1 Anton,sans-serif;text-transform:uppercase;white-space:nowrap}
-.marquee__item:nth-child(4n){color:var(--yellow)}
-.marquee__star{font-size:20px;opacity:.65}
-@keyframes marquee{to{transform:translateX(-50%)}}
+/* MARQUEE */
+.marquee{background:var(--red);color:var(--cream);overflow:hidden;padding:clamp(10px,1.4vw,18px) 0;border-top:1px solid rgba(0,0,0,.1)}
+.marquee__track{display:flex;width:max-content;animation:marq 26s linear infinite}
+.marquee__group{display:flex;align-items:center;gap:clamp(18px,3vw,52px);padding-right:clamp(18px,3vw,52px)}
+.marquee__word{font-family:'Anton',Impact,sans-serif;font-size:clamp(22px,3.4vw,52px);text-transform:uppercase;line-height:1;white-space:nowrap}
+.marquee__word--alt{color:var(--yellow)}
+.marquee__star{font-size:clamp(14px,1.6vw,26px);opacity:.7}
+@keyframes marq{to{transform:translateX(-50%)}}
 
-/* Build */
-.build{height:1100vh;background:var(--hero);position:relative}
-.build__sticky{position:sticky;top:0;height:100svh;overflow:hidden}
-#build-canvas{width:100%;height:100%;display:block}
-.build__shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,250,242,.42),transparent 25%,transparent 68%,rgba(244,235,221,.72));}
-.build__interface{position:absolute;inset:0;color:var(--ink);pointer-events:none}
-.build__heading{position:absolute;top:clamp(82px,12vh,120px);left:var(--pad)}
-.build__heading .kicker{opacity:.55}
-.build__heading h2{font-size:clamp(22px,3vw,40px);margin-top:8px}
-.build__heading h2 span{color:var(--red)}
-.build-step{position:absolute;left:var(--pad);bottom:clamp(100px,15vh,170px);max-width:min(680px,82vw);opacity:0;transform:translateY(24px);transition:.4s var(--ease);}
-.build-step.is-active{opacity:1;transform:none}
-.build-step__label{font:500 11px "JetBrains Mono",monospace;color:var(--red);letter-spacing:.18em}
-.build-step__title{font:400 clamp(3rem,9vw,8rem)/.82 Anton,sans-serif;text-transform:uppercase;letter-spacing:-.025em;margin-top:10px}
-.build-step__text{max-width:35ch;margin-top:16px;color:rgba(33,27,45,.66);font-size:clamp(13px,1.3vw,17px)}
-.build__counter{position:absolute;right:var(--pad);bottom:clamp(95px,14vh,160px);font:clamp(40px,6vw,72px)/1 Anton,sans-serif}
-.build__counter small{font:11px "JetBrains Mono",monospace;opacity:.45;margin-left:5px}
-.build__rail{position:absolute;left:var(--pad);right:var(--pad);bottom:calc(var(--pad) * .65);height:3px;background:rgba(33,27,45,.16)}
-.build__rail i{display:block;height:100%;background:var(--red);transform:scaleX(0);transform-origin:left}
-.build__hint{position:absolute;left:50%;bottom:calc(var(--pad) + 20px);transform:translateX(-50%);font:10px "JetBrains Mono",monospace;letter-spacing:.18em;text-transform:uppercase;opacity:.55}
+/* BUILD SECTION */
+.build{position:relative;height:1200vh;background:var(--ink);}
+.build__sticky{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--ink);}
+.build__canvas{width:100%;height:100%;display:block;object-fit:cover;will-change:transform;}
+.build__veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 26%,rgba(0,0,0,0) 52%,rgba(0,0,0,.78) 100%);}
+.build__ui{position:absolute;inset:0;pointer-events:none;color:var(--cream)}
 
-/* Menu */
-.menu{min-height:100svh;background:var(--cream);padding:clamp(76px,10vh,120px) 0;overflow:hidden}
-.menu__header{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:0 var(--pad);margin-bottom:clamp(28px,5vh,56px)}
-.menu__title{font-size:clamp(40px,6vw,78px);margin-top:10px}
+.build__head{position:absolute;top:calc(var(--pad) + 44px);left:var(--pad);right:var(--pad);display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+.build__head .kicker{color:rgba(243,237,226,.6)}
+.build__title{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.6rem,3.2vw,3rem);text-transform:uppercase;line-height:.92;margin-top:8px}
+.build__title em{font-style:normal;color:var(--yellow)}
+
+.build__steps{position:absolute;inset:0}
+.bstep{position:absolute;left:var(--pad);bottom:clamp(96px,15vh,180px);max-width:min(680px,82vw);opacity:0;transform:translateY(28px);transition:opacity .4s cubic-bezier(.2,.8,.2,1),transform .4s cubic-bezier(.2,.8,.2,1);will-change:opacity,transform;}
+.bstep.is-active{opacity:1;transform:none}
+.bstep__num{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--yellow);margin-bottom:10px;}
+.bstep__name{font-family:'Anton',Impact,sans-serif;font-size:clamp(2.6rem,8.6vw,7.5rem);text-transform:uppercase;line-height:.82;letter-spacing:-.02em;color:var(--cream);}
+.bstep__desc{margin-top:14px;font-size:clamp(13px,1.4vw,17px);color:rgba(243,237,226,.68);max-width:34ch}
+
+.build__rail{position:absolute;right:var(--pad);top:50%;transform:translateY(-50%);display:none;flex-direction:column;gap:14px;align-items:flex-end;}
+@media(min-width:900px){.build__rail{display:flex}}
+.build__rail li{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(243,237,226,.35);transition:color .4s;}
+.build__rail li span{display:block;width:22px;height:1px;background:currentColor;transition:width .4s cubic-bezier(.2,.8,.2,1)}
+.build__rail li.is-active{color:var(--cream)}
+.build__rail li.is-active span{width:44px;background:var(--yellow)}
+
+.build__count{position:absolute;right:var(--pad);bottom:clamp(96px,15vh,180px);font-family:'Anton',Impact,sans-serif;font-size:clamp(2rem,4.5vw,4rem);line-height:1;display:flex;align-items:baseline;gap:6px;}
+.build__count small{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:rgba(243,237,226,.45)}
+.build__progress{position:absolute;left:var(--pad);right:var(--pad);bottom:calc(var(--pad)*.75);height:2px;background:rgba(243,237,226,.2);overflow:hidden;}
+.build__progress i{display:block;height:100%;background:var(--yellow);transform:scaleX(0);transform-origin:left}
+.build__hint{position:absolute;left:50%;bottom:calc(var(--pad)*.75 + 24px);transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(243,237,226,.55);white-space:nowrap;}
+
+/* MENU */
+.menu{height:100svh;background:var(--cream);overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:clamp(22px,4vh,52px);position:relative;}
+.menu__head{padding:0 var(--pad);display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.menu__title{font-size:clamp(2rem,5.2vw,4.4rem);margin-top:8px}
 .menu__title em{font-style:normal;color:var(--red)}
-.menu__hint{opacity:.5}
-.menu__track{display:flex;gap:clamp(16px,1.8vw,26px);padding:0 var(--pad);width:max-content;will-change:transform}
-.menu-card{
-  width:clamp(270px,29vw,390px);
-  height:min(61vh,540px);
-  flex:none;
-  padding:22px;
-  border:1px solid var(--line);
-  border-radius:24px;
-  background:rgba(255,255,255,.76);
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 12px 35px rgba(33,27,45,.05);
-  transition:transform .5s var(--ease),box-shadow .5s;
+.menu__track{display:flex;gap:clamp(14px,1.6vw,24px);padding:0 var(--pad);will-change:transform}
+.card{flex:0 0 clamp(260px,28vw,380px);height:min(60vh,500px);border-radius:18px;background:#fff;border:1px solid var(--line);padding:22px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s;}
+.card:hover{transform:translateY(-6px);box-shadow:0 24px 50px -24px rgba(18,16,15,.4)}
+.card__top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;position:relative;z-index:2;}
+.card__num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:rgba(18,16,15,.4)}
+.card__price{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;background:var(--ink);color:var(--cream);padding:5px 10px;border-radius:999px}
+
+/* Menu Image */
+.card__media{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:90%; height:60%; display:flex; justify-content:center; align-items:center;
+  pointer-events:none; z-index:1;
 }
-.menu-card:hover{transform:translateY(-8px);box-shadow:0 30px 65px rgba(33,27,45,.16)}
-.menu-card__top{display:flex;justify-content:space-between;position:relative;z-index:2}
-.menu-card__number{font:11px "JetBrains Mono",monospace;letter-spacing:.15em;opacity:.45}
-.menu-card__price{padding:6px 11px;border-radius:99px;background:var(--ink);color:var(--cream);font:12px "JetBrains Mono",monospace}
-.menu-card__image{position:absolute;inset:15% 5% 25%;display:grid;place-items:center;}
-.menu-card__image img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 25px 24px rgba(33,27,45,.18));transition:transform .6s var(--ease)}
-.menu-card:hover .menu-card__image img{transform:scale(1.08) rotate(-4deg)}
-.menu-card__bottom{position:relative;padding:16px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.7);backdrop-filter:blur(12px);border-radius:12px}
-.menu-card__title{font:400 clamp(26px,2.5vw,38px)/.95 Anton,sans-serif;text-transform:uppercase}
-.menu-card__description{margin-top:10px;font-size:13px;color:rgba(33,27,45,.62)}
-.menu-card__tag{display:inline-block;margin-top:12px;font:10px "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+.card__media img{
+  max-width:100%; max-height:100%; object-fit:contain; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
+  transition: transform .6s cubic-bezier(.2,.8,.2,1);
+}
+.card:hover .card__media img{ transform: scale(1.07) rotate(4deg); }
 
-/* Story / CTA */
-.story{padding:clamp(90px,14vw,180px) var(--pad);background:var(--ink);color:var(--cream)}
-.story__grid{display:grid;grid-template-columns:1fr;gap:50px;align-items:center}
-.story__title{font-size:clamp(52px,8vw,112px);max-width:9ch}
-.story__title em{font-style:normal;color:var(--yellow)}
-.story__copy{max-width:48ch;margin-top:28px;color:rgba(243,235,221,.66);font-size:clamp(15px,1.4vw,19px)}
-.story__stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:42px}
-.story__stat{padding-top:18px;border-top:1px solid rgba(243,235,221,.2)}
-.story__stat strong{display:block;font:400 clamp(32px,4vw,52px)/1 Anton,sans-serif;color:var(--yellow)}
-.story__stat span{display:block;margin-top:8px;font:10px "JetBrains Mono";letter-spacing:.12em;text-transform:uppercase;opacity:.55}
-.cta-button{display:inline-flex;align-items:center;gap:12px;padding:16px 24px;border-radius:99px;background:var(--red);color:white;font:500 11px "JetBrains Mono";letter-spacing:.12em;text-transform:uppercase;margin-top:34px;transition:.3s}
-.cta-button:hover{background:var(--yellow);color:var(--ink);transform:translateY(-3px)}
-.story-visual{min-height:440px;border:1px solid rgba(243,235,221,.12);border-radius:28px;background:radial-gradient(circle at 50% 40%,rgba(228,91,67,.2),transparent 55%);display:grid;place-items:center;position:relative;overflow:hidden}
-.story-visual:before{content:"";position:absolute;width:70%;aspect-ratio:1;border:1px solid rgba(243,235,221,.1);border-radius:50%;box-shadow:0 0 0 50px rgba(243,235,221,.025),0 0 0 100px rgba(243,235,221,.03)}
-.story-visual p{font:400 clamp(60px,9vw,110px)/.85 Anton,sans-serif;text-align:center;text-transform:uppercase;transform:rotate(-8deg)}
-.story-visual p span{color:var(--yellow)}
-@media(min-width:900px){.story-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:8vw;align-items:center}}
+.card__bottom{position:relative;z-index:2; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px); padding: 10px; border-radius: 8px; margin: 0 -10px -10px -10px;}
+.card__name{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.4rem,2.4vw,2.2rem);text-transform:uppercase;line-height:.9}
+.card__desc{font-size:13px;color:rgba(18,16,15,.6);margin-top:8px;line-height:1.45}
+.card--end{display:grid;place-items:center;text-align:center;background:var(--ink);color:var(--cream);border-color:transparent;}
+.card--end p{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.6rem,3vw,2.6rem);text-transform:uppercase;line-height:.9}
+.card--end span{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.5;margin-top:10px;display:block}
 
-/* Footer */
-footer{background:var(--red);color:var(--cream);padding:clamp(60px,10vw,120px) var(--pad) 28px}
-.footer__title{font-size:clamp(74px,18vw,250px);text-align:center;white-space:nowrap;line-height:.8}
-.footer__row{display:flex;justify-content:space-between;gap:24px;align-items:center;border-top:1px solid rgba(243,235,221,.25);padding-top:24px;margin-top:50px;flex-wrap:wrap}
-.footer__links{display:flex;gap:25px;font:11px "JetBrains Mono";text-transform:uppercase;letter-spacing:.12em}
-.footer__copy{font:11px "JetBrains Mono",monospace;opacity:.6}
+/* VISIT */
+.visit{background:var(--ink);color:var(--cream);padding:clamp(70px,12vh,140px) var(--pad)}
+.visit__grid{display:grid;grid-template-columns:1fr;gap:clamp(36px,6vw,80px)}
+@media(min-width:900px){.visit__grid{grid-template-columns:1.05fr .95fr;align-items:start}}
+.visit__title{font-size:clamp(2.6rem,7vw,6.4rem);margin:14px 0 26px}
+.visit__title em{font-style:normal;color:var(--yellow)}
+.visit__addr{font-style:normal;font-size:clamp(15px,1.4vw,19px);line-height:1.9;color:rgba(243,237,226,.75)}
+.visit__addr strong{color:var(--cream);font-weight:600}
+.hours{margin-top:34px;border-top:1px solid rgba(243,237,226,.16)}
+.hours__row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid rgba(243,237,226,.16);font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.2vw,14px);letter-spacing:.08em;}
+.hours__row dt{text-transform:uppercase;letter-spacing:.16em}
+.hours__row dd{display:flex;align-items:center;gap:10px;margin:0;color:rgba(243,237,226,.72)}
+.hours__row i{font-style:normal;opacity:.4}
+.visit__actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:999px;border:1px solid transparent;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;transition:background .35s,color .35s,border-color .35s,transform .35s;will-change:transform;}
+.btn--solid{background:var(--cream);color:var(--ink)}
+.btn--solid:hover{background:var(--yellow)}
+.btn--line{border-color:rgba(243,237,226,.3);color:var(--cream)}
+.btn--line:hover{background:var(--cream);color:var(--ink)}
+.visit__map{border-radius:18px;overflow:hidden;position:relative;aspect-ratio:4/3;background:radial-gradient(circle at 50% 62%,rgba(244,183,32,.22),transparent 42%),repeating-linear-gradient(0deg,rgba(243,237,226,.07) 0 1px,transparent 1px 46px),repeating-linear-gradient(90deg,rgba(243,237,226,.07) 0 1px,transparent 1px 46px),#1B1815;display:grid;place-items:center;}
+.visit__pin{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:var(--red);color:var(--cream);font-family:'Anton',Impact,sans-serif;font-size:26px;position:relative;}
+.visit__pin::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(210,38,48,.6);animation:ripple 2.4s cubic-bezier(.2,.8,.2,1) infinite;}
+@keyframes ripple{0%{transform:scale(.7);opacity:1}100%{transform:scale(1.6);opacity:0}}
 
-@media(max-width:760px){
-  .story-grid{grid-template-columns:1fr;gap:20px}
-  .story__title{font-size:clamp(64px,22vw,120px)}
-  .story__description{font-size:15px}
-  .story__visual{height:260px;margin-top:25px}
-  .story__shape{left:50%;top:50%;width:150px;height:180px}
-  .menu-card{min-width:82vw}
-  .stat{min-width:140px}
+/* FOOTER */
+.end{background:var(--cream);padding:clamp(60px,10vh,120px) var(--pad) calc(var(--pad)*.8);overflow:hidden}
+.end__big{font-family:'Anton',Impact,sans-serif;font-size:clamp(3.4rem,17vw,17rem);line-height:.8;text-transform:uppercase;letter-spacing:-.02em;text-align:center;color:var(--ink);margin:clamp(24px,5vh,60px) 0;}
+.end__big span{display:inline-block;transition:transform .5s cubic-bezier(.2,.8,.2,1),color .5s}
+.end__big span:hover{color:var(--red)}
+.end__bar{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;background:var(--red);color:var(--cream);border-radius:16px;padding:clamp(20px,3vw,34px);transition:transform .5s cubic-bezier(.2,.8,.2,1);}
+.end__bar:hover{transform:scale(.995)}
+.end__bar-k{font-size:clamp(13px,1.5vw,17px);max-width:46ch;line-height:1.4}
+.end__bar-url{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.2rem,2.4vw,2rem);text-transform:uppercase;display:inline-flex;align-items:center;gap:10px}
+.end__bar-url svg{width:18px;height:18px}
+.end__meta{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:clamp(30px,5vh,60px);padding-top:22px;}
+.end__links{display:flex;gap:clamp(14px,2vw,28px);flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.end__links a{opacity:.7;transition:opacity .3s}
+.end__links a:hover{opacity:1}
+.end__credit{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.55}
+
+@media (prefers-reduced-motion:reduce){
+  .marquee__track{animation:none}
+  .hero__scroll i::after{animation:none}
+  .grain{animation:none}
 }
 
-@media(prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
-}
+/* ORIGINAL ART DIRECTION — warm premium palette, distinct from the reference */
+:root{--ink:#211B2D;--cream:#F3EBDD;--red:#E45B43;--yellow:#E8B85B;--green:#536B55;}
+:root{--hero-surface:radial-gradient(ellipse at 50% 42%, #FFF9EF 0%, #F3EBDD 62%, #E8DCCB 100%);}
+.hero{background:var(--hero-surface);}
+/* Keep the 3D objects above the large title so every loaded model remains visible. */
+#hero-canvas{z-index:4;opacity:1;pointer-events:none;}
+.hero__ui{z-index:2;}
+.hero__title{z-index:3;}
+.hero-ribbon{z-index:5;width:min(112vw,1480px);top:51%;left:50%;opacity:1;mix-blend-mode:normal;filter:drop-shadow(0 5px 0 rgba(33,27,45,.08));transform:translate(-50%,-50%) rotate(-5deg);animation:ribbon-float 7s ease-in-out infinite alternate;}
+.hero-ribbon svg{display:block;width:100%;height:auto;overflow:visible;}
+.hero-ribbon text{font-family:'Anton',Impact,sans-serif;fill:#E45B43;font-size:34px;letter-spacing:7px;}
+.hero-ribbon textPath{animation:none;}
+@keyframes ribbon-float{from{transform:translate(-50%,-48%) rotate(-5deg)}to{transform:translate(-50%,-53%) rotate(2deg)}}
+@media(max-width:640px){.hero-ribbon{width:150vw;top:50%;}.hero-ribbon text{font-size:29px;letter-spacing:4px;}}
+@media(prefers-reduced-motion:reduce){.hero-ribbon{animation:none;}}
+
+/* BUILD SECTION — match the hero's warm cream gradient */
+.build,.build__sticky{background:var(--hero-surface);}
+/* Keep the sequence crisp; no dark overlay over the frames. */
+.build__veil{background:linear-gradient(180deg,rgba(255,249,239,.10) 0%,rgba(243,235,221,0) 24%,rgba(243,235,221,0) 72%,rgba(232,220,203,.14) 100%);}
+.build__ui{color:var(--ink);}
+.build__head .kicker{color:rgba(33,27,45,.58);}
+.build__title em{color:#D99735;}
+.bstep__num{color:#B77B22;}
+.bstep__name{color:var(--ink);}
+.bstep__desc{color:rgba(33,27,45,.68);}
+.build__rail li{color:rgba(33,27,45,.42);}
+.build__rail li.is-active{color:var(--ink);}
+.build__rail li.is-active span{background:#D99735;}
+.build__count small{color:rgba(33,27,45,.48);}
+.build__progress{background:rgba(33,27,45,.18);}
+.build__progress i{background:#D99735;}
+.build__hint{color:rgba(33,27,45,.58);}
+
 </style>
 </head>
-<body>
 
-<div class="grain"></div>
+<body class="is-loading">
 
-<div class="loader" aria-label="Loading experience">
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" data-cursor aria-hidden="true">
+  <span class="cursor__dot"></span>
+  <span class="cursor__label"></span>
+</div>
+
+<div class="loader" data-loader>
   <div class="loader__inner">
-    <div class="loader__brand">BURGUR<span>®</span></div>
-    <div class="loader__line"><i></i></div>
-    <div class="loader__meta">
-      <span>CRAFTING YOUR EXPERIENCE</span>
-      <span class="loader-percent">0%</span>
-    </div>
+    <p class="loader__k kicker">BURGUR · Build Process</p>
+    <p class="loader__pct" data-loader-pct>0%</p>
+    <div class="loader__bar"><i data-loader-bar></i></div>
+    <p class="loader__msg" data-loader-msg>Loading...</p>
   </div>
 </div>
 
-<header class="site-header">
-  <a href="#" class="brand">BURGUR<span>®</span></a>
-  <nav class="main-nav">
-    <a href="#story">Our Story</a>
-    <a href="#menu">Menu</a>
-    <a href="#locations">Locations</a>
-  </nav>
-  <a href="#order" class="order-btn">Order Now <span>↗</span></a>
-  <button class="menu-toggle" aria-label="Toggle menu">
-    <span></span><span></span>
-  </button>
+<header class="topbar">
+  <a class="topbar__logo" href="#top" data-magnetic>
+    <img src="logo.png" alt="BURGUR" onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\'font-family:Anton; font-size:24px; color:#fff;\'>BURGUR®</span>';">
+  </a>
+  <p class="topbar__status">
+    <span class="topbar__dot" aria-hidden="true"></span>
+    <span>Open 7/7 · 11:30 AM → 10:30 PM</span>
+  </p>
+  <a class="topbar__link" href="#menu" data-magnetic data-cursor-text="Taste">
+    <span>Menu</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
 </header>
 
-<main>
-  <section class="hero" id="home">
-    <canvas id="webgl"></canvas>
-    <div class="hero-content">
-      <div class="hero-eyebrow reveal">
-        <span class="line"></span>
-        <span>SMASHED FRESH. STACKED DIFFERENT.</span>
-      </div>
-      <h1 class="hero-title">
-        <span class="title-line"><span>CRAFTED</span></span>
-        <span class="hero-row">
-          <span class="title-outline">FOR THE</span>
-          <span class="title-accent">BOLD</span>
-        </span>
-      </h1>
-      <div class="hero-bottom">
-        <p class="hero-description">
-          Not just another burger. A flavor obsession,<br>
-          built from the bun up.
-        </p>
-        <div class="hero-actions">
-          <a href="#menu" class="btn btn-primary">Explore the menu <span>↗</span></a>
-          <a href="#story" class="btn-text">Our story <span>→</span></a>
-        </div>
-      </div>
+<main id="top">
+  <section class="hero">
+    <canvas id="hero-canvas"></canvas>
+
+    <div class="hero-ribbon" aria-hidden="true">
+      <svg viewBox="0 0 1200 220" role="presentation" focusable="false">
+        <defs><path id="hero-ribbon-curve" d="M-80,132 C160,0 365,250 600,120 S1010,8 1280,125" /></defs>
+        <text><textPath href="#hero-ribbon-curve" startOffset="0%">FRESHLY BUILT ✳ BIG FLAVOUR ✳ NO SHORTCUTS ✳ FRESHLY BUILT ✳ BIG FLAVOUR ✳ NO SHORTCUTS ✳ FRESHLY BUILT ✳ BIG FLAVOUR ✳ NO SHORTCUTS ✳ <animate attributeName="startOffset" from="0%" to="-100%" dur="22s" repeatCount="indefinite" /></textPath></text>
+      </svg>
     </div>
-    <div class="hero-footer">
-      <div class="scroll-indicator">
-        <span class="mouse"></span>
-        <span>SCROLL TO DISCOVER</span>
+    <div class="hero__ui">
+      <div class="hero__top">
+        <p class="kicker hero__kicker">Brioche Bun · Crispy Chicken<br>Melted Cheddar · House Sauce</p>
+        <span class="hero__badge" data-reveal>Handmade · Fresh Ingredients</span>
       </div>
-      <div class="hero-badge">
-        <span class="stars">★★★★★</span>
-        <span>LOVED BY 10,000+ BURGER FANS</span>
+      <h1 class="hero__title display" data-hero-title>BURGUR</h1>
+      <div class="hero__foot">
+        <p class="hero__tag" data-reveal>A burger isn't told. It's built—ingredient by ingredient, right before your eyes.</p>
+        <a class="hero__scroll" href="#build">Scroll to build <i aria-hidden="true"></i></a>
       </div>
     </div>
   </section>
 
-  <section class="ticker">
-    <div class="ticker-track">
-      <span>REAL INGREDIENTS</span><i>✦</i>
-      <span>BOLD FLAVORS</span><i>✦</i>
-      <span>ZERO COMPROMISES</span><i>✦</i>
-      <span>MADE FRESH DAILY</span><i>✦</i>
-      <span>REAL INGREDIENTS</span><i>✦</i>
-      <span>BOLD FLAVORS</span><i>✦</i>
-      <span>ZERO COMPROMISES</span><i>✦</i>
-      <span>FRESHLY SMASHED</span><i>✦</i>
+  <section class="marquee" aria-label="Smash, Cheddar, Sauce, Brioche">
+    <div class="marquee__track">
+      <div class="marquee__group">
+        <span class="marquee__word">Smash</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Cheddar</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Sauce</span><span class="marquee__star">✱</span>
+        <span class="marquee__word marquee__word--alt">¡Burgur!</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Brioche</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Fries</span><span class="marquee__star">✱</span>
+        <span class="marquee__word marquee__word--alt">One More</span><span class="marquee__star">✱</span>
+      </div>
+      <div class="marquee__group" aria-hidden="true">
+        <span class="marquee__word">Smash</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Cheddar</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Sauce</span><span class="marquee__star">✱</span>
+        <span class="marquee__word marquee__word--alt">¡Burgur!</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Brioche</span><span class="marquee__star">✱</span>
+        <span class="marquee__word">Fries</span><span class="marquee__star">✱</span>
+        <span class="marquee__word marquee__word--alt">One More</span><span class="marquee__star">✱</span>
+      </div>
     </div>
   </section>
 
-  <section class="build-section" id="craft">
-    <div class="build-sticky">
-      <canvas id="build-canvas"></canvas>
-      <div class="build-overlay">
-        <div class="build-header">
-          <span class="section-tag">THE ANATOMY OF DELICIOUS</span>
-          <h2>Every layer.<br>A <em>revelation.</em></h2>
-        </div>
-        <div class="build-info">
-          <div class="build-step">
-            <span class="step-number">01</span>
-            <div class="step-details">
-              <h3>The Foundation</h3>
-              <p>Golden brioche, toasted to perfection</p>
-            </div>
-          </div>
-          <div class="build-progress">
-            <div class="progress-track"><div class="progress-fill"></div></div>
-            <span class="progress-label">SCROLL TO BUILD</span>
+  <section class="build" id="build">
+    <div class="build__sticky">
+      
+      <canvas id="build-canvas" class="build__canvas"></canvas>
+
+      <div class="build__veil" aria-hidden="true"></div>
+
+      <div class="build__ui">
+        <div class="build__head">
+          <div>
+            <p class="kicker">The Build · 06 Steps</p>
+            <h2 class="build__title">It builds itself.<br><em>Almost.</em></h2>
           </div>
         </div>
-        <div class="ingredient-list">
-          <div class="ingredient active" data-step="0"><span>01</span>Brioche Bun</div>
-          <div class="ingredient" data-step="1"><span>02</span>House Sauce</div>
-          <div class="ingredient" data-step="2"><span>03</span>Crisp Lettuce</div>
-          <div class="ingredient" data-step="3"><span>04</span>Prime Beef</div>
-          <div class="ingredient" data-step="4"><span>05</span>Aged Cheddar</div>
-          <div class="ingredient" data-step="5"><span>06</span>The Crown</div>
-        </div>
+
+        <ol class="build__steps">
+          <li class="bstep" data-step><span class="bstep__num">01 / 06</span><h3 class="bstep__name">The Bun</h3><p class="bstep__desc">Toasted brioche. The foundation of everything.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">02 / 06</span><h3 class="bstep__name">The Cheese</h3><p class="bstep__desc">Secret recipe. A little smoky, a little spicy.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">03 / 06</span><h3 class="bstep__name">The Patty</h3><p class="bstep__desc">Crisp and cold. It holds the wall.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">04 / 06</span><h3 class="bstep__name">The Lettuce</h3><p class="bstep__desc">Crispy chicken. Marinated and cooked to perfection.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">05 / 06</span><h3 class="bstep__name">The Cheese</h3><p class="bstep__desc">Melted. Oozing. It has to overflow. Always.</p></li>
+          <li class="bstep" data-step><span class="bstep__num">06 / 06</span><h3 class="bstep__name">The Top Bun</h3><p class="bstep__desc">Close it up. It's ready. Let's eat!</p></li>
+        </ol>
+
+        <ul class="build__rail" aria-hidden="true">
+          <li data-dot><span></span>Bun</li>
+          <li data-dot><span></span>Cheese</li>
+          <li data-dot><span></span>Patty</li>
+          <li data-dot><span></span>Lettuce</li>
+          <li data-dot><span></span>Cheese</li>
+          <li data-dot><span></span>Top</li>
+        </ul>
+
+        <div class="build__count" aria-hidden="true"><b data-build-num>01</b><small>/ 06</small></div>
+        <div class="build__progress" aria-hidden="true"><i data-build-bar></i></div>
+        <p class="build__hint" data-build-hint>Scroll to build</p>
       </div>
     </div>
   </section>
 
-  <section class="menu-section" id="menu">
-    <div class="section-header">
-      <span class="section-tag">THE LINEUP</span>
-      <h2>Choose your <em>weapon</em></h2>
+  <section class="menu" id="menu">
+    <div class="menu__head">
+      <div>
+        <p class="kicker">The Menu · Six Ways</p>
+        <h2 class="menu__title display">Pick <em>one</em>.</h2>
+      </div>
+      <p class="kicker" style="opacity:.5">Scroll horizontally →</p>
     </div>
-    <div class="menu-grid">
-      <article class="menu-card" data-item="classic">
-        <div class="card-image"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80" alt="Classic burger"></div>
-        <div class="card-info">
-          <span class="card-tag">THE ORIGINAL</span>
-          <h3>The Classic Smash</h3>
-          <p>Double smashed patty, aged cheddar, house pickles, secret sauce</p>
-          <div class="card-footer"><span class="price">\$14</span><button class="add-btn">+</button></div>
-        </div>
+
+    <div class="menu__track" data-menu-track>
+      <article class="card">
+        <div class="card__top"><span class="card__num">01</span><span class="card__price">$12.00</span></div>
+        <div class="card__media"><img src="menu1.png" alt="The Classic" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Classic</h3><p class="card__desc">Crispy chicken, cheddar, lettuce, tomato, house sauce.</p></div>
       </article>
-      <article class="menu-card featured">
-        <div class="card-badge">MOST WANTED</div>
-        <div class="card-image"><img src="https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=600&q=80" alt="Double Trouble"></div>
-        <div class="card-info">
-          <span class="card-tag">FAN FAVORITE</span>
-          <h3>The Double Trouble</h3>
-          <p>Double smashed patties, caramelized onions, pickles, special sauce</p>
-          <div class="card-bottom"><span class="price">\$18</span><button class="add-btn">Add to cart <span>+</span></button></div>
-        </div>
+
+      <article class="card">
+        <div class="card__top"><span class="card__num">02</span><span class="card__price">$15.00</span></div>
+        <div class="card__media"><img src="menu2.png" alt="The Double" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Double</h3><p class="card__desc">Two patties, double cheddar, caramelized onions.</p></div>
       </article>
-      <article class="menu-card" data-tilt>
-        <div class="card-badge">VEGGIE</div>
-        <div class="card-image"><img src="https://images.unsplash.com/photo-1520072959219-c595dc870360?w=600&q=80" alt="Garden Party"></div>
-        <div class="card-content">
-          <h3>Garden Party</h3>
-          <p>House-made veggie patty, avocado, sprouts, green goddess dressing</p>
-          <div class="card-footer"><span class="price">\$14</span><button class="add-btn" aria-label="Add Garden Fresh">+</button></div>
-        </div>
+
+      <article class="card">
+        <div class="card__top"><span class="card__num">03</span><span class="card__price">$14.00</span></div>
+        <div class="card__media"><img src="menu3.png" alt="The Veggie" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Veggie</h3><p class="card__desc">Chickpea patty, avocado, pickles, lemon yogurt.</p></div>
       </article>
-      <article class="menu-card spicy">
-        <div class="card-image"><img src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=600&q=80" alt="Inferno Burger" loading="lazy"></div>
-        <div class="card-content">
-          <span class="spice-level">🌶️🌶️🌶️</span>
-          <h3>The Inferno</h3>
-          <p>Ghost pepper jack, jalapeños, chipotle aioli, cooling slaw</p>
-          <div class="card-footer"><span class="price">\$16</span><button class="add-btn">+</button></div>
-        </div>
+
+      <article class="card">
+        <div class="card__top"><span class="card__num">04</span><span class="card__price">$13.00</span></div>
+        <div class="card__media"><img src="menu4.png" alt="The Chicken" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Chicken</h3><p class="card__desc">Crispy chicken, white cabbage, honey-mustard sauce.</p></div>
       </article>
-    </div>
-    <div class="menu-cta">
-      <a href="#full-menu" class="btn-outline">View full menu <span>→</span></a>
+
+      <article class="card">
+        <div class="card__top"><span class="card__num">05</span><span class="card__price">$15.00</span></div>
+        <div class="card__media"><img src="menu5.png" alt="The Bacon" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Bacon</h3><p class="card__desc">Smoked bacon, cheddar, crispy onions, BBQ sauce.</p></div>
+      </article>
+
+      <article class="card">
+        <div class="card__top"><span class="card__num">06</span><span class="card__price">$18.00</span></div>
+        <div class="card__media"><img src="menu6.png" alt="The Chef" onerror="this.style.display='none'"></div>
+        <div class="card__bottom"><h3 class="card__name">The Chef</h3><p class="card__desc">Whatever the chef found this morning. Trust us.</p></div>
+      </article>
+
+      <div class="card card--end"><div><p>Come taste!</p><span>We are waiting.</span></div></div>
     </div>
   </section>
 
-  <section class="story" id="story">
-    <div class="story-visual">
-      <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&q=80" alt="Gourmet burger">
-      <div class="experience-badge">
-        <span class="number">12</span>
-        <span>years of<br>flavor craft</span>
+  <section class="visit" id="acces">
+    <div class="visit__grid">
+      <div>
+        <p class="kicker" style="color:rgba(243,237,226,.55)">Find us here</p>
+        <h2 class="visit__title display">12 Grill<br><em>Street</em></h2>
+        <address class="visit__addr"><strong>BURGUR</strong><br>12 Grill Street<br>2824 Vicques · Jura</address>
+        <dl class="hours">
+          <div class="hours__row"><dt>Mon → Thu</dt><dd><span>11:30 AM</span><i>→</i><span>10:00 PM</span></dd></div>
+          <div class="hours__row"><dt>Fri → Sat</dt><dd><span>11:30 AM</span><i>→</i><span>11:30 PM</span></dd></div>
+          <div class="hours__row"><dt>Sunday</dt><dd><span>12:00 PM</span><i>→</i><span>09:00 PM</span></dd></div>
+        </dl>
+        <div class="visit__actions">
+          <a class="btn btn--solid" href="https://maps.google.com" target="_blank" rel="noopener" data-magnetic data-cursor-text="Directions">Directions</a>
+          <a class="btn btn--line" href="tel:+41324356415" data-magnetic data-cursor-text="Call">+41 32 435 64 15</a>
+        </div>
       </div>
-    </div>
-    <div class="story-content">
-      <span class="section-label">OUR PHILOSOPHY</span>
-      <h2>No shortcuts.<br>Just <em>obsession.</em></h2>
-      <p>We source locally, grind fresh daily, and never compromise on quality. Every burger is a testament to doing things the right way—even when it's the hard way.</p>
-      <div class="values">
-        <div class="value"><span class="icon">🌱</span><div><h4>Locally Sourced</h4><p>From farms we know by name</p></div></div>
-        <div class="value"><span class="icon">🔥</span><div><h4>Flame Grilled</h4><p>Cooked to order, every time</p></div></div>
-        <div class="value"><span class="icon">♻️</span><span class="text"><strong>Zero Waste</strong><small>Compostable packaging, always</small></span></div>
-      </div>
-      <a href="#story" class="link-arrow">Our full story <span>→</span></a>
-    </div>
-  </section>
-
-  <section class="testimonial">
-    <div class="quote-mark">"</div>
-    <blockquote>
-      This isn't just the best burger in the city.<br>
-      It's a <span>religious experience.</span>
-    </blockquote>
-    <div class="reviewer">
-      <div class="avatar"></div>
-      <div class="reviewer-info">
-        <strong>Sarah Mitchell</strong>
-        <span>Food Critic, The Daily Bite</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="cta-section" id="order">
-    <div class="cta-inner">
-      <h2>Hungry yet?</h2>
-      <p>Your new favorite burger is one click away.</p>
-      <a href="#order" class="btn btn-light">Order for pickup <span>→</span></a>
-    </div>
-    <div class="marquee">
-      <div class="marquee-content">
-        <span>SMASH BURGERS</span><i>✦</i><span>HAND-CUT FRIES</span><i>✦</i><span>CRAFT SHAKES</span><i>✦</i><span>GOOD VIBES</span><i>✦</i>
-        <span>SMASH BURGERS</span><i>✦</i><span>HAND-CUT FRIES</span><i>✦</i><span>CRAFTED SHAKES</span><i>✦</i>
-      </div>
+      <div class="visit__map" role="img" aria-label="Map to BURGUR restaurant"><div class="visit__pin" aria-hidden="true">B</div></div>
     </div>
   </section>
 </main>
 
-<footer class="footer">
-  <div class="footer-top">
-    <div class="footer-brand">
-      <a href="/" class="logo">BURGUR<span>®</span></a>
-      <p>Real ingredients. Unreal flavor.</p>
-    </div>
-    <div class="footer-links">
-      <div class="link-group">
-        <h4>Explore</h4>
-        <a href="#menu">Menu</a>
-        <a href="#story">Our Story</a>
-        <a href="#locations">Locations</a>
-      </div>
-      <div class="link-group">
-        <h4>Connect</h4>
-        <a href="#">Instagram</a>
-        <a href="#">TikTok</a>
-        <a href="#">Facebook</a>
-      </div>
-      <div class="link-group">
-        <h4>Visit Us</h4>
-        <p>123 Burger Lane<br>Foodie District, FD 12345</p>
-        <a href="mailto:hello@burgur.com">hello@burgur.com</a>
-      </div>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>© 2024 BURGUR. All rights reserved.</p>
-    <div class="legal"><a href="#">Privacy</a><a href="#">Terms</a></div>
+<footer class="end">
+  <a class="end__bar" href="#top" data-magnetic data-cursor-text="Let's go!">
+    <span class="end__bar-k">BURGUR is also about house fries, the terrace, and sauces with a kick.</span>
+    <span class="end__bar-url">Back to top <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
+  <p class="end__big display" aria-label="¡Burgur!"><span aria-hidden="true">¡BURGUR!</span></p>
+  <div class="end__meta">
+    <p class="end__links"><a href="#menu">Menu</a><a href="#acces">Find Us</a><a href="#">Legal</a><span style="opacity:.45">© 2026 BURGUR</span></p>
+    <p class="end__credit">Made with buns and scroll</p>
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+
+<!-- Three.js Module Script for Floating Objects -->
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-// Initialize Three.js scene
-const canvas = document.querySelector('#webgl');
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 8;
+  const canvas = document.getElementById('hero-canvas');
+  const scene = new THREE.Scene();
+  
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.z = 12;
 
-const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor(0x000000, 0);
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
+  renderer.toneMappingExposure = 1;
+  renderer.setClearColor(0x000000, 0);
 
-// Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-scene.add(ambientLight);
-const directionalLight = new THREE.DirectionalLight(0xffa500, 1);
-directionalLight.position.set(5, 5, 5);
-scene.add(directionalLight);
+  // Studio reflections are important for glTF/PBR materials. Without an
+  // environment map, saturated objects can render much darker than in a GLB viewer.
+  const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  const studioEnvironment = new RoomEnvironment();
+  const studioEnvMap = pmremGenerator.fromScene(studioEnvironment, 0.04).texture;
+  scene.environment = studioEnvMap;
+  studioEnvironment.dispose();
+  pmremGenerator.dispose();
 
-// Create floating burger ingredients
-const ingredients = [];
-const createIngredient = (type, x, y, z) => {
-  let geometry, material;
-  switch(type) {
-    case 'bun':
-      geometry = new THREE.SphereGeometry(1.5, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
-      material = new THREE.MeshStandardMaterial({ color: 0xE6A855, roughness: 0.6 });
-      break;
-    case 'patty':
-      geometry = new THREE.CylinderGeometry(1.5, 1.5, 0.4, 32);
-      material = new THREE.MeshStandardMaterial({ color: 0x5C3A21, roughness: 0.8 });
-      break;
-    case 'lettuce':
-      geometry = new THREE.TorusGeometry(1.2, 0.3, 16, 100);
-      material = new THREE.MeshStandardMaterial({ color: 0x7CB342, roughness: 0.7 });
-      break;
-    default:
-      geometry = new THREE.BoxGeometry();
-      material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-  }
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.set(x, y, z);
-  mesh.userData = { originalY: y, speed: 0.5 + Math.random() * 0.5, offset: Math.random() * Math.PI * 2 };
-  scene.add(mesh);
-  ingredients.push(mesh);
-};
+  // Neutral white lighting: improve visibility without tinting the tomato red/orange.
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x77716b, 1.35);
+  scene.add(hemiLight);
 
-// Add ingredients
-createIngredient('bun', 0, -2, 0);
-createIngredient('patty', 0, -1, 0);
-createIngredient('bun', 0, 1.5, 0);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+  scene.add(ambientLight);
 
-// Animation loop
-function animate() {
-  requestAnimationFrame(animate);
-  const time = Date.now() * 0.001;
-  ingredients.forEach((ing, i) => {
-    ing.rotation.y = Math.sin(time * 0.5 + i) * 0.1;
-    ing.position.y = ing.userData.originalY + Math.sin(time + i) * 0.1;
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+  keyLight.position.set(4, 6, 7);
+  scene.add(keyLight);
+
+  const fillLight = new THREE.DirectionalLight(0xffffff, 1.15);
+  fillLight.position.set(-5, 1, 5);
+  scene.add(fillLight);
+
+  const rimLight = new THREE.DirectionalLight(0xffffff, 1.5);
+  rimLight.position.set(1, 4, -5);
+  scene.add(rimLight);
+
+  const loader = new GLTFLoader();
+  const models = [];
+  const pointer = { x: 0, y: 0, active: false };
+  window.addEventListener('pointermove', (e) => { pointer.x = (e.clientX / window.innerWidth) * 2 - 1; pointer.y = -(e.clientY / window.innerHeight) * 2 + 1; pointer.active = true; }, { passive: true });
+  window.addEventListener('pointerleave', () => { pointer.active = false; });
+  
+  const glbFiles = [
+    'tomato.glb', 'cucumber.glb', 'chicken.glb',
+    'fries.glb', 'oregano.glb', '1.glb', '2.glb', '3.glb'
+  ];
+  window.__glbLoadState = { total: glbFiles.length, settled: 0, loaded: 0 };
+  const markGlbSettled = (ok) => { window.__glbLoadState.settled++; if (ok) window.__glbLoadState.loaded++; };
+
+  glbFiles.forEach((file, index) => {
+    loader.load(file, (gltf) => {
+      const model = gltf.scene;
+      
+      // Preserve the original GLB materials and colors; normalize only object size.
+      model.updateMatrixWorld(true);
+      const bounds = new THREE.Box3().setFromObject(model);
+      const size = new THREE.Vector3();
+      bounds.getSize(size);
+      const maxDim = Math.max(size.x, size.y, size.z) || 1;
+      const targetSize = [1.35, 1.2, 1.45, 1.25, 1.0, 1.15, 1.15, 1.15][index] || 1.2;
+      const scale = targetSize / maxDim;
+      model.scale.setScalar(scale);
+      model.updateMatrixWorld(true);
+      const centeredBounds = new THREE.Box3().setFromObject(model);
+      const center = new THREE.Vector3();
+      centeredBounds.getCenter(center);
+      model.position.sub(center);
+
+      // Arrange the ingredients inside the camera's visible hero area, not far behind the title.
+      const spots = [
+        [-4.1,  1.25, 2.2], [ 4.0,  1.05, 2.0],
+        [-3.5, -1.35, 2.6], [ 3.6, -1.45, 2.4],
+        [-5.0,  0.05, 1.8], [ 5.0,  0.05, 1.9],
+        [-1.8,  1.85, 2.1], [ 1.8, -1.85, 2.3]
+      ];
+      const spot = spots[index] || [0, 0, 2];
+      model.position.x += spot[0];
+      model.position.y += spot[1];
+      model.position.z = spot[2];
+
+      model.userData = {
+        baseY: model.position.y,
+        baseX: model.position.x,
+        baseZ: model.position.z,
+        repelX: 0, repelY: 0,
+        speed: 0.5 + Math.random() * 0.5,
+        offset: Math.random() * Math.PI * 2,
+        rotSpeedX: (Math.random() - 0.5) * 0.02,
+        rotSpeedY: (Math.random() - 0.5) * 0.02,
+      };
+
+      scene.add(model);
+      models.push(model);
+      markGlbSettled(true);
+      model.scale.multiplyScalar(0.001);
+      model.userData.targetScale = scale;
+      model.userData.bounceStart = performance.now();
+      if (!canvas.classList.contains('loaded')) {
+        canvas.classList.add('loaded');
+      }
+    }, undefined, (error) => { console.warn('Could not load GLB:', file, error); markGlbSettled(false); });
   });
-  renderer.render(scene, camera);
-}
 
-// Mouse interaction
-document.addEventListener('mousemove', (e) => {
-  const x = (e.clientX / window.innerWidth) * 2 - 1;
-  const y = -(e.clientY / window.innerHeight) * 2 + 1;
-  scene.rotation.y = x * 0.1;
-  scene.rotation.x = y * 0.1;
-});
+  const clock = new THREE.Clock();
 
-// Scroll animation
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
-  camera.position.z = 10 - scrollY * 0.01;
-});
+  function animate() {
+    requestAnimationFrame(animate);
+    const time = clock.getElapsedTime();
 
-// Loader
-window.addEventListener('load', () => {
-  document.querySelector('.loader').style.opacity = '0';
-  setTimeout(() => document.querySelector('.loader').style.display = 'none', 500);
-});
+    models.forEach(model => {
+      const ud = model.userData;
+      // Floating idle motion plus gentle cursor-avoidance in screen space.
+      const floatX = Math.sin(time * ud.speed * 0.7 + ud.offset) * 0.18;
+      const floatY = Math.sin(time * ud.speed + ud.offset) * 0.42;
+      let pushX = 0, pushY = 0;
+      if (pointer.active) {
+        const projected = model.position.clone().project(camera);
+        const dx = projected.x - pointer.x;
+        const dy = projected.y - pointer.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        const reach = 0.55;
+        if (d < reach && d > 0.001) {
+          const force = Math.pow((reach - d) / reach, 2) * 1.9;
+          pushX = (dx / d) * force;
+          pushY = (dy / d) * force;
+        }
+      }
+      ud.repelX += (pushX - ud.repelX) * 0.09;
+      ud.repelY += (pushY - ud.repelY) * 0.09;
+      model.position.x = ud.baseX + floatX + ud.repelX;
+      model.position.y = ud.baseY + floatY + ud.repelY;
+      const age = Math.min(1, (performance.now() - model.userData.bounceStart) / 1100);
+      const easeOut = 1 - Math.pow(1 - age, 3);
+      const bounce = Math.abs(Math.sin(age * Math.PI * 2.5)) * (1 - age) * 0.14;
+      const s = model.userData.targetScale * (0.001 + 0.999 * easeOut) * (1 + bounce);
+      model.scale.setScalar(s);
+      model.rotation.x += model.userData.rotSpeedX;
+      model.rotation.y += model.userData.rotSpeedY;
+    });
+
+    renderer.render(scene, camera);
+  }
+  
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 </script>
 
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Inter', sans-serif; overflow-x: hidden; background: #0a0a0a; color: #fff; }
-  .hero { height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; }
-  #webgl { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-  h1 { font-size: 8rem; z-index: 10; position: relative; mix-blend-mode: difference; }
-</style>
+<!-- Main Scroll Logic -->
+<script>
+const q  = (s, c = document) => c.querySelector(s);
+const qa = (s, c = document) => Array.from(c.querySelectorAll(s));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+gsap.registerPlugin(ScrollTrigger);
+
+// 1. LENIS SMOOTH SCROLL
+let lenis = null;
+if (window.Lenis) {
+  lenis = new Lenis({
+    duration: 1.15,
+    wheelMultiplier: 0.72,
+    smoothWheel: true,
+    lerp: 0.075
+  });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+  lenis.stop(); 
+}
+
+qa('a[href^="#"]').forEach((a) => {
+  a.addEventListener('click', (e) => {
+    const id = a.getAttribute('href');
+    if (!id || id === '#') return;
+    const target = q(id);
+    if (!target) return;
+    e.preventDefault();
+    if (lenis) lenis.scrollTo(target, { offset: 0, duration: 1 });
+    else target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// 2. HERO TEXT SPLIT
+function splitChars(el) {
+  const text = el.textContent.trim();
+  el.textContent = '';
+  const out = [];
+  text.split('').forEach((ch) => {
+    const outer = document.createElement('span');
+    outer.className = 'ch';
+    const inner = document.createElement('span');
+    inner.className = 'ch__in';
+    inner.textContent = ch === ' ' ? '\u00A0' : ch;
+    outer.appendChild(inner);
+    el.appendChild(outer);
+    out.push(inner);
+  });
+  return out;
+}
+const heroChars = splitChars(q('[data-hero-title]'));
+
+// 3. LOADER
+const loader    = q('[data-loader]');
+const pctEl     = q('[data-loader-pct]');
+const barEl     = q('[data-loader-bar]');
+const msgEl     = q('[data-loader-msg]');
+const pct = { v: 0 };
+let loaderClosed = false;
+let loaderForceClose = false;
+
+const msgs = ['Warming up the scene...', 'Loading 3D ingredients...', 'Preparing scroll animations...', 'Almost ready. Let\'s go.'];
+
+gsap.to(pct, {
+  v: 92, duration: 1.5, ease: 'power1.out',
+  onUpdate() {
+    pctEl.textContent = Math.round(pct.v) + '%';
+    if (barEl) barEl.style.transform = 'scaleX(' + (pct.v / 100) + ')';
+    msgEl.textContent = msgs[Math.min(msgs.length - 1, Math.floor(pct.v / 26))];
+  }
+});
+
+function introHero() {
+  gsap.timeline({ defaults: { ease: 'expo.out' } })
+    .to(heroChars, { y: 0, duration: 1.15, stagger: 0.055 }, 0)
+    .from('.hero__top > *', { y: 24, opacity: 0, duration: 0.9, stagger: 0.1 }, 0.25)
+    .from('.hero__foot > *', { y: 24, opacity: 0, duration: 0.9, stagger: 0.1 }, 0.45);
+}
+
+function closeLoader() {
+  if (loaderClosed) return;
+  // Wait for the GLB requests too, but never block forever if a file is missing.
+  if (!loaderForceClose && window.__glbLoadState && window.__glbLoadState.settled < window.__glbLoadState.total) {
+    setTimeout(closeLoader, 150);
+    return;
+  }
+  loaderClosed = true;
+  gsap.to(pct, {
+    v: 100, duration: 0.35, ease: 'power2.out',
+    onUpdate() {
+      pctEl.textContent = Math.round(pct.v) + '%';
+      if (barEl) barEl.style.transform = 'scaleX(' + (pct.v / 100) + ')';
+    },
+    onComplete() {
+      document.body.classList.remove('is-loading');
+      if (lenis) lenis.start();
+      gsap.timeline()
+        .to('.loader__inner', { y: -30, opacity: 0, duration: 0.5, ease: 'power2.inOut' })
+        .to(loader, { yPercent: -100, duration: 0.95, ease: 'expo.inOut' }, '-=0.2')
+        .set(loader, { display: 'none' })
+        .add(introHero, '-=0.65');
+      ScrollTrigger.refresh();
+    }
+  });
+}
+
+// 4. CANVAS IMAGE SEQUENCE LOGIC
+const canvas = document.getElementById('build-canvas');
+const ctx = canvas.getContext('2d');
+const COUNT = 180;
+const BASE_PATH = "frame/"; 
+
+const frames = new Array(COUNT);
+let imagesLoaded = 0;
+let imagesSettled = 0;
+let sequenceStarted = false;
+
+for (let i = 0; i < COUNT; i++) {
+  const img = new Image();
+  img.decoding = "async";
+  // ⚠️ CHANGED TO .png SINCE YOU UPDATED THE FILES
+  img.src = BASE_PATH + "frame-" + String(i + 1).padStart(3, '0') + ".png";
+  
+  img.onload = () => {
+    imagesLoaded++; imagesSettled++;
+    if (imagesSettled >= COUNT && !sequenceStarted) {
+      sequenceStarted = true;
+      drawFrame(0);
+      closeLoader();
+      requestAnimationFrame(renderLoop);
+    }
+  };
+  img.onerror = () => {
+    imagesSettled++;
+    console.warn('Frame failed to load:', img.src);
+    if (imagesSettled >= COUNT && !sequenceStarted) {
+      sequenceStarted = true; drawFrame(0); closeLoader(); requestAnimationFrame(renderLoop);
+    }
+  };
+  frames[i] = img;
+}
+
+function sizeCanvas() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = canvas.clientWidth * dpr;
+  canvas.height = canvas.clientHeight * dpr;
+}
+sizeCanvas();
+window.addEventListener("resize", sizeCanvas);
+
+function drawFrame(index) {
+  const img = frames[index];
+  if (!img || !img.complete || !img.naturalWidth) return;
+  
+  const cw = canvas.width;
+  const ch = canvas.height;
+  const r = img.naturalWidth / img.naturalHeight;
+  
+  let w = cw;
+  let h = cw / r;
+  
+  if (h < ch) {
+    h = ch;
+    w = ch * r;
+  }
+  
+  ctx.clearRect(0, 0, cw, ch);
+  ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+}
+
+let targetFrame = 0;
+let currentFrame = 0;
+let isBuildActive = false;
+
+ScrollTrigger.create({
+  trigger: '.build',
+  start: 'top top',
+  end: 'bottom bottom',
+  onUpdate(self) {
+    const p = self.progress;
+    targetFrame = p * (COUNT - 1);
+
+    if (q('[data-build-bar]')) q('[data-build-bar]').style.transform = 'scaleX(' + p + ')';
+    // Keep the UI step label tied to the rendered frame, not raw scroll progress.
+    // This prevents the heading/count from racing ahead of the burger animation.
+    if (q('[data-build-hint]')) q('[data-build-hint]').style.opacity = p > 0.03 ? 0 : 1;
+  },
+  onToggle(self) {
+    isBuildActive = self.isActive;
+  }
+});
+
+function renderLoop() {
+  if (isBuildActive) {
+    // Smoothly chase the target so the last frames are not skipped.
+    currentFrame += (targetFrame - currentFrame) * 0.075;
+    if (Math.abs(targetFrame - currentFrame) < 0.025) currentFrame = targetFrame;
+
+    const renderedFrame = Math.round(currentFrame);
+    drawFrame(renderedFrame);
+
+    // Six step labels now change only as the matching frame section is reached.
+    const stepFromRenderedFrame = clamp(
+      Math.floor((renderedFrame / (COUNT - 1)) * 6),
+      0,
+      5
+    );
+    setStep(stepFromRenderedFrame);
+  }
+  requestAnimationFrame(renderLoop);
+}
+
+// Never trap visitors behind the preloader if a frame or third-party script fails.
+setTimeout(() => {
+  loaderForceClose = true;
+  if (!sequenceStarted) { sequenceStarted = true; drawFrame(0); requestAnimationFrame(renderLoop); }
+  closeLoader();
+}, 12000);
+
+// CINEMATIC SCROLL DEPTH: subtle parallax on hero typography and background.
+if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+  gsap.to('.hero__title', { yPercent: 24, scale: 0.88, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.8 } });
+  // Ribbon positioning/motion is handled by its own CSS keyframes; avoid GSAP transform conflicts.
+  gsap.utils.toArray('.visit__title, .menu__title').forEach((el) => gsap.from(el, { y: 38, opacity: 0, duration: 0.85, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 86%' } }));
+}
+
+// 5. UI TEXT UPDATES
+const steps = qa('[data-step]');
+const dots = qa('[data-dot]');
+const numEl = q('[data-build-num]');
+let currentStep = -1;
+
+function setStep(i) {
+  if (i === currentStep) return;
+  currentStep = i;
+  steps.forEach((el, k) => el.classList.toggle('is-active', k === i));
+  dots.forEach((el, k) => el.classList.toggle('is-active', k === i));
+  if (numEl) numEl.textContent = String(i + 1).padStart(2, '0');
+}
+setStep(0);
+
+// 6. MENU HORIZONTAL SCROLL
+const menuTrack = q('[data-menu-track]');
+if (menuTrack) {
+  const getDistance = () => Math.max(0, menuTrack.scrollWidth - window.innerWidth + 32);
+  gsap.to(menuTrack, {
+    x: () => -getDistance(),
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '.menu',
+      start: 'top top',
+      end: () => '+=' + getDistance(),
+      pin: true,
+      scrub: 1,
+      anticipatePin: 1,
+      invalidateOnRefresh: true
+    }
+  });
+}
+
+// 7. REVEALS
+qa('[data-reveal]').forEach((el) => {
+  gsap.from(el, { y: 26, opacity: 0, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
+});
+gsap.utils.toArray('.visit__addr, .hours, .visit__actions, .visit__map').forEach((el, i) => {
+  gsap.from(el, { y: 30, opacity: 0, duration: 0.9, delay: i * 0.06, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 92%' } });
+});
+
+// 8. CURSOR & MAGNETIC
+const cursorEl = q('[data-cursor]');
+if (cursorEl && window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
+  const labelEl = q('.cursor__label', cursorEl);
+  const xTo = gsap.quickTo(cursorEl, 'x', { duration: 0.35, ease: 'power3' });
+  const yTo = gsap.quickTo(cursorEl, 'y', { duration: 0.35, ease: 'power3' });
+
+  window.addEventListener('mousemove', (e) => {
+    gsap.set(cursorEl, { opacity: 1 });
+    xTo(e.clientX); yTo(e.clientY);
+  });
+  qa('[data-cursor-text]').forEach((el) => {
+    el.addEventListener('mouseenter', () => { labelEl.textContent = el.dataset.cursorText || ''; cursorEl.classList.add('is-label'); });
+    el.addEventListener('mouseleave', () => cursorEl.classList.remove('is-label'));
+  });
+}
+qa('[data-magnetic]').forEach((el) => {
+  const strength = 0.32;
+  el.addEventListener('mousemove', (e) => {
+    const r = el.getBoundingClientRect();
+    gsap.to(el, { x: (e.clientX - r.left - r.width / 2) * strength, y: (e.clientY - r.top - r.height / 2) * strength, duration: 0.45, ease: 'power3.out' });
+  });
+  el.addEventListener('mouseleave', () => gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)' }));
+});
+
+window.addEventListener('load', () => ScrollTrigger.refresh());
+</script>
 </body>
 </html>
-```<|close|>think<|sep|><|open|>response<|sep|>Below is a complete upgraded version. It keeps your existing `frame/`, `.glb`, and menu assets, while improving the interface, asset loading, mobile behavior, 3D presentation, scrolling, accessibility, and failure handling.
-
-```html
-<!doctype html>
-<html lang="en" class="no-js">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>BURGUR® — Built Different</title>
-<meta name="description" content="BURGUR — an interactive 3D burger experience, built ingredient by ingredient.">
-<meta name="theme-color" content="#F3EBDD">
-
-<script>
-document.documentElement.classList.remove('no-js');
-document.documentElement.classList.add('js');
-</script>
-
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-<style>
-:root{
-  --ink:#211b2d;
-  --paper:#f3ebdd;
-  --paper-light:#fff9ef;
-  --red:#e45b43;
-  --red-dark:#bd4132;
-  --gold:#dca54c;
-  --green:#536b55;
-  --white:#fffdf8;
-  --muted:rgba(33,27,45,.62);
-  --line:rgba(33,27,45,.14);
-  --dark-line:rgba(243,235,221,.16);
-  --pad:clamp(18px,4vw,64px);
-  --header-h:82px;
-  --radius:clamp(18px,2vw,28px);
-  --ease:cubic-bezier(.2,.8,.2,1);
-  --hero:radial-gradient(ellipse at 50% 38%,#fffdf7 0%,#f3ebdd 62%,#e8dccb 100%);
-}
-
-*,*::before,*::after{box-sizing:border-box}
-html,body{margin:0;min-height:100%}
-html{scroll-behavior:auto;-webkit-text-size-adjust:100%}
-body{
-  margin:0;
-  overflow-x:hidden;
-  background:var(--ink);
-  color:var(--ink);
-  font-family:Inter,system-ui,-apple-system,sans-serif;
-  -webkit-font-smoothing:antialiased;
-}
-body.loading{overflow:hidden;height:100svh}
-button,input,a{font:inherit}
-a{color:inherit;text-decoration:none}
-button{color:inherit}
-img,svg,canvas{display:block;max-width:100%}
-h1,h2,h3,p{margin:0}
-ul,ol{margin:0;padding:0;list-style:none}
-button,a{-webkit-tap-highlight-color:transparent}
-::selection{background:var(--red);color:#fff}
-
-.display{
-  font-family:"Anton",Impact,sans-serif;
-  font-weight:400;
-  text-transform:uppercase;
-  line-height:.84;
-  letter-spacing:-.02em;
-}
-.mono{
-  font-family:"JetBrains Mono",monospace;
-  font-size:11px;
-  font-weight:500;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-}
-.sr-only{
-  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
-  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
-}
-.skip-link{
-  position:fixed;top:12px;left:12px;z-index:12000;
-  transform:translateY(-160%);padding:12px 18px;
-  background:var(--white);color:var(--ink);border-radius:8px;
-}
-.skip-link:focus{transform:none}
-.no-scroll{overflow:hidden}
-
-/* Ambient surface */
-.grain{
-  position:fixed;inset:-60%;z-index:8000;pointer-events:none;opacity:.026;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.8' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation:noise 8s steps(5) infinite;
-}
-@keyframes noise{
-  20%{transform:translate(2%,-3%)}
-  40%{transform:translate(-3%,3%)}
-  60%{transform:translate(3%,2%)}
-  80%{transform:translate(-2%,-2%)}
-}
-
-/* Pointer */
-.pointer{
-  position:fixed;left:0;top:0;z-index:9600;pointer-events:none;
-  opacity:0;mix-blend-mode:difference;
-}
-.pointer i{
-  position:absolute;width:9px;height:9px;border-radius:50%;
-  background:#fff;transform:translate(-50%,-50%);
-}
-.pointer span{
-  position:absolute;left:0;top:0;padding:12px 18px;border-radius:999px;
-  background:#fff;color:#000;white-space:nowrap;
-  font:500 10px "JetBrains Mono",monospace;
-  letter-spacing:.12em;text-transform:uppercase;
-  transform:translate(-50%,-50%) scale(0);
-  transition:transform .3s var(--ease);
-}
-.pointer.active span:last-child{transform:translate(-50%,-50%) scale(1)}
-.pointer.active i{opacity:0}
-@media(pointer:coarse){.cursor{display:none}}
-
-/* Loader */
-.loader{
-  position:fixed;inset:0;z-index:9000;background:var(--ink);color:var(--paper);
-  display:grid;place-items:center;
-}
-.loader__box{width:min(520px,82vw);text-align:center}
-.loader__brand{font:400 clamp(62px,14vw,150px)/.8 "Anton",sans-serif;letter-spacing:-.03em}
-.loader__brand span{color:var(--coral)}
-.loader__meta{
-  display:flex;justify-content:space-between;gap:20px;
-  margin-top:28px;font:11px "JetBrains Mono",monospace;
-  text-transform:uppercase;letter-spacing:.14em;color:rgba(243,235,221,.6)
-}
-.loader__line{height:2px;margin-top:14px;background:rgba(243,235,221,.15);overflow:hidden}
-.loader__line i{display:block;height:100%;background:var(--yellow);transform:scaleX(0);transform-origin:left}
-.loader-note{margin-top:16px;color:rgba(243,235,221,.5);font:11px "JetBrains Mono",monospace}
-
-/* Header */
-.header{
-  position:fixed;z-index:7000;top:0;left:0;right:0;
-  height:82px;padding:0 var(--gutter);
-  display:flex;align-items:center;justify-content:space-between;
-  color:white;mix-blend-mode:difference;pointer-events:none;
-}
-.header a{pointer-events:auto}
-.logo{
-  display:flex;align-items:center;gap:10px;
-  font:28px/1 "Anton",sans-serif;letter-spacing:-.02em;
-}
-.logo b{display:grid;place-items:center;width:32px;height:32px;border:1px solid currentColor;border-radius:50%;font-size:17px}
-.logo small{font:500 8px "JetBrains Mono",monospace;letter-spacing:.15em;margin-top:5px}
-.header-status{
-  display:flex;align-items:center;gap:9px;
-  font:10px "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;
-}
-.header-status i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
-@keyframes pulse{50%{opacity:.3;transform:scale(.7)}}
-.pill-link{
-  display:flex;align-items:center;gap:20px;border:1px solid currentColor;
-  padding:11px 16px;border-radius:100px;
-  font:10px "JetBrains Mono",monospace;letter-spacing:.15em;text-transform:uppercase;
-  transition:background .3s,color .3s;
-}
-.pill:hover{background:currentColor;color:var(--ink)}
-.pill svg{width:14px;height:14px}
-@media(max-width:800px){.header-status{display:none}.header{height:70px}.logo{font-size:22px}}
